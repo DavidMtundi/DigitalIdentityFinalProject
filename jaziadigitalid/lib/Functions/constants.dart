@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class EcommercApp {
-  static const String appName = "e_Shop";
+class DigitalId {
+  static const String appName = "e_id";
   static SharedPreferences? preferences;
-  static User? user = FirebaseAuth.instance.currentUser;
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -23,11 +22,15 @@ class EcommercApp {
   static const String userAvatarurl = "url";
 
   static const String addressId = "addressId";
-  static const String totalamount = "totalAmount";
-  static const String productId = "productid";
-  static const String paymentdetails = "paymentdetails";
-  static const String ordertime = "ordertime";
-  static const String issuccess = "issuccess";
 
   static String currentuserPhotUrl = "";
+}
+
+String? geterror(String? controller) {
+  final text = controller!.toString();
+  if (text.isEmpty) {
+    return "Field cannot be empty";
+  }
+
+  return null;
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jaziadigitalid/Functions/firebasefunc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -24,7 +25,7 @@ class _DIRegisterState extends State<DIRegister> {
   TextEditingController firstname = TextEditingController();
   TextEditingController lastname = TextEditingController();
   TextEditingController work = TextEditingController();
-  late DateTime dob;
+  DateTime dob = DateTime.now();
   TextEditingController age = TextEditingController();
   TextEditingController maritalStatus = TextEditingController();
   //parents details
@@ -63,6 +64,9 @@ class _DIRegisterState extends State<DIRegister> {
             ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
       } else if (args.value is DateTime) {
         _selectedDate = args.value.toString();
+        setState(() {
+          dob = DateTime.parse(args.value.toString());
+        });
       } else if (args.value is List<DateTime>) {
         _dateCount = args.value.length.toString();
       } else {
@@ -78,150 +82,148 @@ class _DIRegisterState extends State<DIRegister> {
           title: const Text('Personal Details'),
           content: Form(
             key: personaldetails,
-            child: Container(
-              child: Column(
-                children: [
-                  Center(
-                    // Center is a layout widget. It takes a single child and positions it
-                    // in the middle of the parent.
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        _imgObjs.isNotEmpty
-                            ? GridView.builder(
-                                shrinkWrap: true,
-                                itemCount: _imgObjs.length,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        mainAxisSpacing: 2,
-                                        crossAxisSpacing: 2),
-                                itemBuilder: (BuildContext context, int index) {
-                                  final image = _imgObjs[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.all(2),
-                                    child: Image.file(File(image.modifiedPath),
-                                        height: 80, fit: BoxFit.cover),
-                                  );
-                                })
-                            : const Text("Please Add Your Picture"),
-                        const SizedBox(
-                          height: 15,
+            child: Column(
+              children: [
+                Center(
+                  // Center is a layout widget. It takes a single child and positions it
+                  // in the middle of the parent.
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      _imgObjs.isNotEmpty
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              itemCount: _imgObjs.length,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      mainAxisSpacing: 2,
+                                      crossAxisSpacing: 2),
+                              itemBuilder: (BuildContext context, int index) {
+                                final image = _imgObjs[index];
+                                return Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Image.file(File(image.modifiedPath),
+                                      height: 80, fit: BoxFit.cover),
+                                );
+                              })
+                          : const Text("Please Add Your Picture"),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.lightBlueAccent,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        Container(
-                          width: 200,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.lightBlueAccent,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _imgObjs.isEmpty
-                                  ? const Text("Add Photo")
-                                  : const Text("Update Photos"),
-                              IconButton(
-                                onPressed: () async {
-                                  var status = await Permission.camera.status;
-                                  var storagestatus =
-                                      await Permission.storage.status;
-                                  if ((status.isDenied) ||
-                                      (storagestatus.isDenied)) {
-                                    status.isDenied
-                                        ? await Permission.camera.request()
-                                        : await Permission.storage.request();
-                                    // We didn't ask for permission yet or the permission has been denied before but not permanently.
-                                  }
-                                  // Get max 5 images
-                                  else {
-                                    final List<ImageObject>? objects =
-                                        await Navigator.of(context).push(
-                                            PageRouteBuilder(pageBuilder:
-                                                (context, animation, __) {
-                                      return const ImagePicker(maxCount: 3);
-                                    }));
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _imgObjs.isEmpty
+                                ? const Text("Add Photo")
+                                : const Text("Update Photos"),
+                            IconButton(
+                              onPressed: () async {
+                                var status = await Permission.camera.status;
+                                var storagestatus =
+                                    await Permission.storage.status;
+                                if ((status.isDenied) ||
+                                    (storagestatus.isDenied)) {
+                                  status.isDenied
+                                      ? await Permission.camera.request()
+                                      : await Permission.storage.request();
+                                  // We didn't ask for permission yet or the permission has been denied before but not permanently.
+                                }
+                                // Get max 5 images
+                                else {
+                                  final List<ImageObject>? objects =
+                                      await Navigator.of(context).push(
+                                          PageRouteBuilder(pageBuilder:
+                                              (context, animation, __) {
+                                    return const ImagePicker(maxCount: 3);
+                                  }));
 
-                                    if ((objects?.length ?? 0) > 0) {
-                                      setState(() {
-                                        _imgObjs = objects!;
-                                      });
-                                    }
+                                  if ((objects?.length ?? 0) > 0) {
+                                    setState(() {
+                                      _imgObjs = objects!;
+                                    });
                                   }
-                                },
-                                icon: _imgObjs.length < 2
-                                    ? const Icon(Icons.add)
-                                    : const Icon(Icons.update_sharp),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                                }
+                              },
+                              icon: _imgObjs.length < 2
+                                  ? const Icon(Icons.add)
+                                  : const Icon(Icons.update_sharp),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
-                  const SizedBox(
-                    height: 20,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  controller: firstname,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'First Name',
                   ),
-                  TextField(
-                    controller: firstname,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'First Name',
-                    ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                TextField(
+                  controller: lastname,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Last Name',
                   ),
-                  const SizedBox(
-                    height: 8,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                TextField(
+                  controller: work,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Work',
                   ),
-                  TextField(
-                    controller: lastname,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Last Name',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  TextField(
-                    controller: work,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Work',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const Text(
-                    "Date of Birth",
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  ),
-                  SfDateRangePicker(
-                    onSelectionChanged: _onSelectionChanged,
-                    selectionMode: DateRangePickerSelectionMode.range,
-                    initialSelectedRange: PickerDateRange(
-                        DateTime.now().subtract(const Duration(days: 4)),
-                        DateTime.now().add(const Duration(days: 3))),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  DropdownButton<String>(
-                    hint: Text(_selectedMarital.toString()),
-                    items: <String>['Single', 'Married'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedMarital = value.toString();
-                      });
-                    },
-                  )
-                ],
-              ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                const Text(
+                  "Date of Birth",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                SfDateRangePicker(
+                  onSelectionChanged: _onSelectionChanged,
+                  selectionMode: DateRangePickerSelectionMode.range,
+                  initialSelectedRange: PickerDateRange(
+                      DateTime.now().subtract(const Duration(days: 4)),
+                      DateTime.now().add(const Duration(days: 3))),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                DropdownButton<String>(
+                  hint: Text(_selectedMarital.toString()),
+                  items: <String>['Single', 'Married'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedMarital = value.toString();
+                    });
+                  },
+                )
+              ],
             ),
           ),
         ),
@@ -408,13 +410,31 @@ class _DIRegisterState extends State<DIRegister> {
           type: StepperType.vertical,
           currentStep: _activeStepIndex,
           steps: stepList(),
-          onStepContinue: () {
+          onStepContinue: () async {
             if (_activeStepIndex < (stepList().length - 1)) {
               setState(() {
                 _activeStepIndex += 1;
               });
             } else {
               print('Submited');
+
+              //add to the database
+              // FirebaseFunc().savePersonDetails(
+              //     firstname.text.toString(),
+              //     lastname.value.text.trim(),
+              //     work.value.text.trim(),
+              //     dob,
+              //     fathername.value.text.trim(),
+              //     mothername.value.text.trim(),
+              //     grandfathername.value.text.trim(),
+              //     grandmothername.value.text.trim(),
+              //     location.value.text.trim(),
+              //     sublocation.value.text.trim(),
+              //     village.value.text.trim(),
+              //     _selectedVoucher,
+              //     voucheruniqueid.value.text.trim(),
+              //     await FirebaseFunc().uploadAllImages(_imgObjs));
+              await FirebaseFunc().uploadAllImages(_imgObjs);
 
               //!TODO:
             }

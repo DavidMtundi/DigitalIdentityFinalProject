@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:advance_image_picker/advance_image_picker.dart';
-import 'package:advance_image_picker/models/image_object.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:multistageform/multistageform.dart';
 import 'package:intl/intl.dart';
+import 'package:jaziadigitalid/multistageform.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,11 +12,52 @@ void main() {
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return ErrorWidget(details.exception);
   };
-  runApp(const MyApp());
+  runApp(MyApp());
+}
+
+class FutureBuilderWidget extends StatelessWidget {
+  const FutureBuilderWidget({
+    Key? key,
+    required Future<FirebaseApp> initialization,
+  })  : _initialization = initialization,
+        super(key: key);
+
+  final Future<FirebaseApp> _initialization;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future: _initialization,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          // Navigator.push(
+          //    context,
+          //    MaterialPageRoute(
+          //       builder: (context) => SomethingWentWrongScreen()));
+          return const Center(
+            child: const Text("Something went wrong"),
+          );
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          //Navigator.pushReplacement(context,
+          //  MaterialPageRoute(builder: (context) => LoginScreen()));
+          return DIRegister();
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   // This widget is the root of your application.
   @override
@@ -114,7 +155,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: DIRegister(),
+      //home: DIRegister(),
+      home: FutureBuilderWidget(initialization: _initialization),
     );
   }
 }

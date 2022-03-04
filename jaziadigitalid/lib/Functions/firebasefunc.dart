@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class FirebaseFunc {
+  List<String> downloadedUrls = [];
+
   String uniqueid = DateTime.now().millisecondsSinceEpoch.toString();
   Future<void> savePersonDetails(
       String fname,
@@ -18,15 +22,13 @@ class FirebaseFunc {
       String village,
       String vouchertype,
       String voucherid,
-      String digitalIdentity,
-      String personpicsurls) async {
+      List<String> personpicsurls) async {
     try {
       final itemsRef = FirebaseFirestore.instance.collection("items");
       itemsRef.doc(uniqueid).set({
-        "personpics": [personpicsurls],
         "fname": fname,
         "lname": lname,
-        "work": [work],
+        "work": work,
         "dob": dob,
         "fathername": fathername,
         "mothername": mothername,
@@ -37,7 +39,8 @@ class FirebaseFunc {
         "village": village,
         "vouchertype": vouchertype,
         "voucherid": voucherid,
-        "DigitalIdentity": uniqueid
+        "DigitalIdentity": uniqueid,
+        "personpics": FieldValue.arrayUnion(downloadedUrls),
       });
     } catch (ex) {
       // setState(() {
@@ -48,8 +51,6 @@ class FirebaseFunc {
 
 //saving the profiles
   Future uploadAllImages(images) async {
-    List<String> downloadedUrls = [];
-
 //get all the images and save them
     if (images.isNotEmpty) {
       for (int i = 0; i < images.length; i++) {
@@ -74,9 +75,11 @@ class FirebaseFunc {
 
       final Reference storagereference =
           FirebaseStorage.instance.ref().child("profiles");
+      print(mFileImage['originalPath'].toString());
 
-      UploadTask uploadTask =
-          storagereference.child("image_$uniqueid.jpg").putFile(mFileImage);
+      UploadTask uploadTask = storagereference
+          .child("image_$uniqueid.jpg")
+          .putFile(File(mFileImage['originalPath'].toString()));
 
       downloadurlvalue = await (await uploadTask).ref.getDownloadURL();
     }
