@@ -417,24 +417,26 @@ class _DIRegisterState extends State<DIRegister> {
               });
             } else {
               print('Submited');
-
+//print set a unique 6 random numbers and send them
               //add to the database
-              // FirebaseFunc().savePersonDetails(
-              //     firstname.text.toString(),
-              //     lastname.value.text.trim(),
-              //     work.value.text.trim(),
-              //     dob,
-              //     fathername.value.text.trim(),
-              //     mothername.value.text.trim(),
-              //     grandfathername.value.text.trim(),
-              //     grandmothername.value.text.trim(),
-              //     location.value.text.trim(),
-              //     sublocation.value.text.trim(),
-              //     village.value.text.trim(),
-              //     _selectedVoucher,
-              //     voucheruniqueid.value.text.trim(),
-              //     await FirebaseFunc().uploadAllImages(_imgObjs));
-              await FirebaseFunc().uploadAllImages(_imgObjs);
+              await FirebaseFunc().savePersonDetails(
+                  firstname.text.toString(),
+                  lastname.value.text.trim(),
+                  work.value.text.trim(),
+                  dob,
+                  fathername.value.text.trim(),
+                  mothername.value.text.trim(),
+                  grandfathername.value.text.trim(),
+                  grandmothername.value.text.trim(),
+                  location.value.text.trim(),
+                  sublocation.value.text.trim(),
+                  village.value.text.trim(),
+                  _selectedVoucher,
+                  voucheruniqueid.value.text.trim(),
+                  await FirebaseFunc().uploadAllImages(_imgObjs));
+              //  print(_imgObjs);
+              //await FirebaseFunc().uploadAllImages(_imgObjs);
+              print('Submited');
 
               //!TODO:
             }
