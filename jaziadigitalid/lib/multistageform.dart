@@ -422,7 +422,7 @@ class _DIRegisterState extends State<DIRegister> {
             } else {
               print('Submited');
 
-              await PerformOperations();
+              await performOperations();
 //print set a unique 6 random numbers and send them
               //add to the database
 
@@ -493,7 +493,7 @@ class _DIRegisterState extends State<DIRegister> {
         });
   }
 
-  PerformOperations() async {
+  performOperations() async {
     ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
         "the validation code for a client named \n $firstname  $lastname   Fathers Name is : $fathername \n Mother name is $mothername \n    GrandFather Name is : $grandfathername \n   GrandMother name is : $grandmothername \n  Location  is : $location \n   Sublocation is : $sublocation \n   Village Name is : $village \n  \n\n\n Validation Code is ${getRandomNumber().toString()}");
