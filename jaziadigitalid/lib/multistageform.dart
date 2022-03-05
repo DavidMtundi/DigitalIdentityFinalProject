@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/Functions/constants.dart';
 import 'package:jaziadigitalid/Functions/firebasefunc.dart';
@@ -424,21 +425,7 @@ class _DIRegisterState extends State<DIRegister> {
               await PerformOperations();
 //print set a unique 6 random numbers and send them
               //add to the database
-              await FirebaseFunc().savePersonDetails(
-                  firstname.text.toString(),
-                  lastname.value.text.trim(),
-                  work.value.text.trim(),
-                  dob,
-                  fathername.value.text.trim(),
-                  mothername.value.text.trim(),
-                  grandfathername.value.text.trim(),
-                  grandmothername.value.text.trim(),
-                  location.value.text.trim(),
-                  sublocation.value.text.trim(),
-                  village.value.text.trim(),
-                  _selectedVoucher,
-                  voucheruniqueid.value.text.trim(),
-                  await FirebaseFunc().uploadAllImages(_imgObjs));
+
               //  print(_imgObjs);
               //await FirebaseFunc().uploadAllImages(_imgObjs);
               print('Submited');
@@ -464,6 +451,24 @@ class _DIRegisterState extends State<DIRegister> {
     );
   }
 
+  Future saveDetails() async {
+    await FirebaseFunc().savePersonDetails(
+        firstname.text.toString(),
+        lastname.value.text.trim(),
+        work.value.text.trim(),
+        dob,
+        fathername.value.text.trim(),
+        mothername.value.text.trim(),
+        grandfathername.value.text.trim(),
+        grandmothername.value.text.trim(),
+        location.value.text.trim(),
+        sublocation.value.text.trim(),
+        village.value.text.trim(),
+        _selectedVoucher,
+        voucheruniqueid.value.text.trim(),
+        await FirebaseFunc().uploadAllImages(_imgObjs));
+  }
+
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
         context: context,
@@ -471,10 +476,19 @@ class _DIRegisterState extends State<DIRegister> {
           return AlertDialog(
             title: const Text('Verify the Input Code'),
             content: TextField(
-              onChanged: (value) {},
               controller: _textFieldController,
               decoration: const InputDecoration(hintText: "verify code"),
             ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    validatecode(
+                            _textFieldController.value.text.trim().toString())
+                        ? saveDetails()
+                        : Fluttertoast.showToast(msg: "Incorrect Code Inputed");
+                  },
+                  child: const Text("Validate ")),
+            ],
           );
         });
   }
@@ -482,8 +496,8 @@ class _DIRegisterState extends State<DIRegister> {
   PerformOperations() async {
     ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
-        "the validation code for a client named \n $firstname  $lastname   Fathers Name is : $fathername \n Mother name is $mothername \n    GrandFather Name is : $grandfathername \n   GrandMother name is : $grandmothername \n  Location  is : $location \n   Sublocation is : $sublocation \n   Village Name is : $village \n");
-
+        "the validation code for a client named \n $firstname  $lastname   Fathers Name is : $fathername \n Mother name is $mothername \n    GrandFather Name is : $grandfathername \n   GrandMother name is : $grandmothername \n  Location  is : $location \n   Sublocation is : $sublocation \n   Village Name is : $village \n  \n\n\n Validation Code is ${getRandomNumber().toString()}");
+    await _displayTextInputDialog(context);
     //display a popup box
   }
 }

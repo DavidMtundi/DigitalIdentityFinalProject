@@ -40,6 +40,7 @@ late TwilioFlutter twilioFlutter;
 
 ///this function sends a twilio message
 Future SendTwilioMessage(String phone, String body) async {
+   getRandomNumber();
   twilioFlutter = TwilioFlutter(
       accountSid: DigitalId.twilioSID,
       authToken: DigitalId.twilioauthtoken,
