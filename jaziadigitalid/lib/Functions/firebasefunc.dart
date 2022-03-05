@@ -24,7 +24,7 @@ class FirebaseFunc {
       String voucherid,
       List<String> personpicsurls) async {
     try {
-      final itemsRef = FirebaseFirestore.instance.collection("items");
+      final itemsRef = FirebaseFirestore.instance.collection("DigitalIdentity");
       itemsRef.doc(uniqueid).set({
         "fname": fname,
         "lname": lname,
@@ -75,7 +75,7 @@ class FirebaseFunc {
 
       final Reference storagereference =
           FirebaseStorage.instance.ref().child("profiles");
-      print(mFileImage['originalPath'].toString());
+      // print(mFileImage['originalPath'].toString());
 
       UploadTask uploadTask = storagereference
           .child("image_$uniqueid.jpg")

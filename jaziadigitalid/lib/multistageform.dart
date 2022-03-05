@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jaziadigitalid/Functions/constants.dart';
 import 'package:jaziadigitalid/Functions/firebasefunc.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -53,6 +54,8 @@ class _DIRegisterState extends State<DIRegister> {
   String _selectedMarital = "Marital Status";
 
   String _selectedVoucher = "Voucher Type";
+
+  TextEditingController _textFieldController = TextEditingController();
 
   /// The method for [DateRangePickerSelectionChanged] callback, which will be
   /// called whenever a selection changed on the date picker widget.
@@ -417,6 +420,8 @@ class _DIRegisterState extends State<DIRegister> {
               });
             } else {
               print('Submited');
+
+              await PerformOperations();
 //print set a unique 6 random numbers and send them
               //add to the database
               await FirebaseFunc().savePersonDetails(
@@ -457,5 +462,28 @@ class _DIRegisterState extends State<DIRegister> {
         ),
       ),
     );
+  }
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Verify the Input Code'),
+            content: TextField(
+              onChanged: (value) {},
+              controller: _textFieldController,
+              decoration: const InputDecoration(hintText: "verify code"),
+            ),
+          );
+        });
+  }
+
+  PerformOperations() async {
+    ///get the randomnumber and send it to the chief
+    await SendTwilioMessage("+254740204736",
+        "the validation code for a client named \n $firstname  $lastname   Fathers Name is : $fathername \n Mother name is $mothername \n    GrandFather Name is : $grandfathername \n   GrandMother name is : $grandmothername \n  Location  is : $location \n   Sublocation is : $sublocation \n   Village Name is : $village \n");
+
+    //display a popup box
   }
 }

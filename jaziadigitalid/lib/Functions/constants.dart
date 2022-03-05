@@ -1,6 +1,11 @@
+import 'dart:core';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twilio_flutter/twilio_flutter.dart';
 
 class DigitalId {
   static const String appName = "e_id";
@@ -24,6 +29,44 @@ class DigitalId {
   static const String addressId = "addressId";
 
   static String currentuserPhotUrl = "";
+  static String twilioSID = "AC8d9f21adca071eb70d092b5c7292fff2";
+  static String twilioPhoneNumber = "+17152882261";
+  static String twilioauthtoken = "2db70fff9b7d6256da3068f191260fe1";
+
+  double randomNumber = 0;
+}
+
+late TwilioFlutter twilioFlutter;
+
+///this function sends a twilio message
+Future SendTwilioMessage(String phone, String body) async {
+  twilioFlutter = TwilioFlutter(
+      accountSid: DigitalId.twilioSID,
+      authToken: DigitalId.twilioauthtoken,
+      twilioNumber: DigitalId.twilioPhoneNumber);
+  try {
+    await twilioFlutter.sendSMS(toNumber: phone, messageBody: body);
+  } catch (e) {
+    Fluttertoast.showToast(msg: "Unknown Error Occured");
+  }
+}
+
+///this function returns a random number
+double getRandomNumber() {
+  double randomnumber = 0;
+  var rng = Random();
+  var code = rng.nextInt(900000) + 100000;
+  randomnumber = double.parse(code.toString());
+  return randomnumber;
+}
+
+///validate the code
+bool validatecode(String value) {
+  bool isvalid = false;
+  if (double.parse(value) == DigitalId().randomNumber) {
+    isvalid = true;
+  }
+  return isvalid;
 }
 
 String? geterror(String? controller) {
