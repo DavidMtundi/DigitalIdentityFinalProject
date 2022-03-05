@@ -496,7 +496,7 @@ class _DIRegisterState extends State<DIRegister> {
   performOperations() async {
     ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
-        "the validation code for a client named \n $firstname  $lastname   Fathers Name is : $fathername \n Mother name is $mothername \n    GrandFather Name is : $grandfathername \n   GrandMother name is : $grandmothername \n  Location  is : $location \n   Sublocation is : $sublocation \n   Village Name is : $village \n  \n\n\n Validation Code is ${getRandomNumber().toString()}");
+        "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${getRandomNumber().toString()}");
     await _displayTextInputDialog(context);
     //display a popup box
   }

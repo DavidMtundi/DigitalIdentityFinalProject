@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
@@ -33,14 +34,14 @@ class DigitalId {
   static String twilioPhoneNumber = "+17152882261";
   static String twilioauthtoken = "2db70fff9b7d6256da3068f191260fe1";
 
-  double randomNumber = 0;
+  int randomNumber = 0;
 }
 
 late TwilioFlutter twilioFlutter;
 
 ///this function sends a twilio message
 Future SendTwilioMessage(String phone, String body) async {
-   getRandomNumber();
+  DigitalId().randomNumber = getRandomNumber();
   twilioFlutter = TwilioFlutter(
       accountSid: DigitalId.twilioSID,
       authToken: DigitalId.twilioauthtoken,
@@ -53,18 +54,19 @@ Future SendTwilioMessage(String phone, String body) async {
 }
 
 ///this function returns a random number
-double getRandomNumber() {
-  double randomnumber = 0;
+int getRandomNumber() {
+  int randomnumber = 0;
   var rng = Random();
   var code = rng.nextInt(900000) + 100000;
-  randomnumber = double.parse(code.toString());
+  randomnumber = int.parse(code.toString());
   return randomnumber;
 }
 
 ///validate the code
 bool validatecode(String value) {
   bool isvalid = false;
-  if (double.parse(value) == DigitalId().randomNumber) {
+  print(DigitalId().randomNumber.toString());
+  if (int.parse(value) == DigitalId().randomNumber) {
     isvalid = true;
   }
   return isvalid;

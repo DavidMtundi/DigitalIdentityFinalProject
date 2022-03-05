@@ -79,7 +79,7 @@ class FirebaseFunc {
 
       UploadTask uploadTask = storagereference
           .child("image_$uniqueid.jpg")
-          .putFile(File(mFileImage['originalPath'].toString()));
+          .putFile(File(mFileImage.modifiedPath.toString()));
 
       downloadurlvalue = await (await uploadTask).ref.getDownloadURL();
     }
