@@ -4,6 +4,8 @@ import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jaziadigitalid/mt940/mainscreen.dart';
+import 'package:jaziadigitalid/mt940/updatedscreens/MainPage.dart';
 import 'package:jaziadigitalid/multistageform.dart';
 
 void main() {
@@ -45,7 +47,8 @@ class FutureBuilderWidget extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           //Navigator.pushReplacement(context,
           //  MaterialPageRoute(builder: (context) => LoginScreen()));
-          return DIRegister();
+          // return DIRegister();
+          return MainPage();
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
@@ -144,6 +147,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        unselectedWidgetColor: Colors.red,
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the

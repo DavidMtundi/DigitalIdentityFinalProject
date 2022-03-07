@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/Functions/constants.dart';
 import 'package:jaziadigitalid/Functions/firebasefunc.dart';
+import 'package:jaziadigitalid/Widgets/InputField.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -18,22 +19,25 @@ class DIRegister extends StatefulWidget {
 
 class _DIRegisterState extends State<DIRegister> {
   int _activeStepIndex = 0;
-  final personaldetails = GlobalKey<FormState>();
-  final parentaldetails = GlobalKey<FormState>();
-  final locationdetails = GlobalKey<FormState>();
-  final voucherdetails = GlobalKey<FormState>();
 
-  //person's details
+  final List<GlobalKey<FormState>> _formKeys = [
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>()
+  ];
+
+//person's details
   TextEditingController firstname = TextEditingController();
   TextEditingController lastname = TextEditingController();
   TextEditingController work = TextEditingController();
   DateTime dob = DateTime.now();
   TextEditingController age = TextEditingController();
   TextEditingController maritalStatus = TextEditingController();
-  //parents details
+//parents details
   TextEditingController fathername = TextEditingController();
   TextEditingController mothername = TextEditingController();
-  //grandparet details
+//grandparet details
   TextEditingController grandmothername = TextEditingController();
   TextEditingController grandfathername = TextEditingController();
 //location details
@@ -41,7 +45,7 @@ class _DIRegisterState extends State<DIRegister> {
   TextEditingController sublocation = TextEditingController();
   TextEditingController village = TextEditingController();
 
-  //voucher details
+//voucher details
   String selectedVouchertype = "";
   TextEditingController voucheruniqueid = TextEditingController();
   TextEditingController voucherpassword = TextEditingController();
@@ -56,27 +60,32 @@ class _DIRegisterState extends State<DIRegister> {
 
   String _selectedVoucher = "Voucher Type";
 
-  TextEditingController _textFieldController = TextEditingController();
+  final TextEditingController _textFieldController = TextEditingController();
 
   /// The method for [DateRangePickerSelectionChanged] callback, which will be
   /// called whenever a selection changed on the date picker widget.
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
-    setState(() {
-      if (args.value is PickerDateRange) {
-        _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
-            // ignore: lines_longer_than_80_chars
-            ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
-      } else if (args.value is DateTime) {
-        _selectedDate = args.value.toString();
-        setState(() {
-          dob = DateTime.parse(args.value.toString());
-        });
-      } else if (args.value is List<DateTime>) {
-        _dateCount = args.value.length.toString();
-      } else {
-        _rangeCount = args.value.length.toString();
-      }
-    });
+    if (_formKeys[_activeStepIndex].currentState!.validate()) {
+      setState(() {
+        // isloading =true;
+      });
+      setState(() {
+        if (args.value is PickerDateRange) {
+          _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
+              // ignore: lines_longer_than_80_chars
+              ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
+        } else if (args.value is DateTime) {
+          _selectedDate = args.value.toString();
+          setState(() {
+            dob = DateTime.parse(args.value.toString());
+          });
+        } else if (args.value is List<DateTime>) {
+          _dateCount = args.value.length.toString();
+        } else {
+          _rangeCount = args.value.length.toString();
+        }
+      });
+    }
   }
 
   List<Step> stepList() => [
@@ -85,7 +94,7 @@ class _DIRegisterState extends State<DIRegister> {
           isActive: _activeStepIndex >= 0,
           title: const Text('Personal Details'),
           content: Form(
-            key: personaldetails,
+            key: _formKeys[0],
             child: Column(
               children: [
                 Center(
@@ -169,33 +178,15 @@ class _DIRegisterState extends State<DIRegister> {
                 const SizedBox(
                   height: 20,
                 ),
-                TextField(
-                  controller: firstname,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'First Name',
-                  ),
-                ),
+                EditText(title: "First Name", textEditingController: firstname),
                 const SizedBox(
                   height: 8,
                 ),
-                TextField(
-                  controller: lastname,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Last Name',
-                  ),
-                ),
+                EditText(title: "Last Name", textEditingController: lastname),
                 const SizedBox(
                   height: 8,
                 ),
-                TextField(
-                  controller: work,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Work',
-                  ),
-                ),
+                EditText(title: "Work", textEditingController: work),
                 const SizedBox(
                   height: 12,
                 ),
@@ -236,47 +227,31 @@ class _DIRegisterState extends State<DIRegister> {
           isActive: _activeStepIndex >= 0,
           title: const Text('Parental Details'),
           content: Form(
-            key: parentaldetails,
+            key: _formKeys[1],
             child: Container(
               child: Column(
                 children: [
-                  TextField(
-                    controller: fathername,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Full Father Name',
-                    ),
-                  ),
+                  EditText(
+                      title: "Father's Name",
+                      textEditingController: fathername),
                   const SizedBox(
                     height: 8,
                   ),
-                  TextField(
-                    controller: mothername,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Full Mother Name',
-                    ),
-                  ),
+                  EditText(
+                      title: "Mother's Name",
+                      textEditingController: mothername),
                   const SizedBox(
                     height: 8,
                   ),
-                  TextField(
-                    controller: grandfathername,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Full GrandFather Name',
-                    ),
-                  ),
+                  EditText(
+                      title: "GrandFather Name",
+                      textEditingController: grandfathername),
                   const SizedBox(
                     height: 8,
                   ),
-                  TextField(
-                    controller: grandmothername,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Full Grandmother Name',
-                    ),
-                  ),
+                  EditText(
+                      title: "GrandMother Name",
+                      textEditingController: grandmothername),
                   const SizedBox(
                     height: 8,
                   ),
@@ -291,40 +266,26 @@ class _DIRegisterState extends State<DIRegister> {
             isActive: _activeStepIndex >= 1,
             title: const Text('Location Address'),
             content: Form(
-              key: locationdetails,
+              key: _formKeys[2],
               child: Container(
                 child: Column(
                   children: [
                     const SizedBox(
                       height: 8,
                     ),
-                    TextField(
-                      controller: location,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: ' Location',
-                      ),
-                    ),
+                    EditText(
+                        title: "Location", textEditingController: location),
                     const SizedBox(
                       height: 8,
                     ),
-                    TextField(
-                      controller: sublocation,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Sub Location',
-                      ),
-                    ),
+                    EditText(
+                        title: "Sub Location",
+                        textEditingController: sublocation),
                     const SizedBox(
                       height: 8,
                     ),
-                    TextField(
-                      controller: village,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Village',
-                      ),
-                    ),
+                    EditText(
+                        title: "Village Name", textEditingController: village),
                     const SizedBox(
                       height: 8,
                     ),
@@ -337,7 +298,7 @@ class _DIRegisterState extends State<DIRegister> {
           isActive: _activeStepIndex >= 0,
           title: const Text('Voucher Details'),
           content: Form(
-            key: voucherdetails,
+            key: _formKeys[3],
             child: Container(
               child: Column(
                 children: [
@@ -358,24 +319,15 @@ class _DIRegisterState extends State<DIRegister> {
                   const SizedBox(
                     height: 12,
                   ),
-                  TextField(
-                    controller: voucheruniqueid,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Voucher Uniquie Id',
-                    ),
-                  ),
+                  EditText(
+                      title: "Voucher ID",
+                      textEditingController: voucheruniqueid),
                   const SizedBox(
                     height: 8,
                   ),
-                  TextField(
-                    controller: voucherpassword,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Voucher Password',
-                    ),
-                  ),
+                  EditText(
+                      title: "Voucher Password",
+                      textEditingController: voucherpassword),
                 ],
               ),
             ),
