@@ -33,15 +33,15 @@ class DigitalId {
   static String twilioSID = "AC8d9f21adca071eb70d092b5c7292fff2";
   static String twilioPhoneNumber = "+17152882261";
   static String twilioauthtoken = "2db70fff9b7d6256da3068f191260fe1";
-
-  int randomNumber = 0;
 }
+
+int randomNumber = 0;
 
 late TwilioFlutter twilioFlutter;
 
 ///this function sends a twilio message
 Future SendTwilioMessage(String phone, String body) async {
-  DigitalId().randomNumber = getRandomNumber();
+  randomNumber = getRandomNumber();
   twilioFlutter = TwilioFlutter(
       accountSid: DigitalId.twilioSID,
       authToken: DigitalId.twilioauthtoken,
@@ -55,18 +55,19 @@ Future SendTwilioMessage(String phone, String body) async {
 
 ///this function returns a random number
 int getRandomNumber() {
-  int randomnumber = 0;
+  int random = 0;
   var rng = Random();
   var code = rng.nextInt(900000) + 100000;
-  randomnumber = int.parse(code.toString());
-  return randomnumber;
+  random = int.parse(code.toString());
+  randomNumber = random;
+  return random;
 }
 
 ///validate the code
 bool validatecode(String value) {
   bool isvalid = false;
-  print(DigitalId().randomNumber.toString());
-  if (int.parse(value) == DigitalId().randomNumber) {
+  print(randomNumber.toString());
+  if (int.parse(value) == randomNumber) {
     isvalid = true;
   }
   return isvalid;

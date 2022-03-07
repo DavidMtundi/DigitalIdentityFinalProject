@@ -3,11 +3,15 @@ import 'dart:io';
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/mt940/updatedscreens/UploadPage.dart';
 
-void main() {
+const debug = true;
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(debug: debug);
 
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return ErrorWidget(details.exception);

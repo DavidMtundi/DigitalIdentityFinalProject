@@ -10,7 +10,9 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'MainPage.dart';
 
 class DownloadPage extends StatefulWidget {
-  DownloadPage({Key? key}) : super(key: key);
+  final TargetPlatform? platform;
+
+  DownloadPage({Key? key, this.platform}) : super(key: key);
 
   @override
   _DownloadPageState createState() => _DownloadPageState();
