@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+String chiefUserId = "ChiefId";
+
 class FirebaseFunc {
   List<String> downloadedUrls = [];
 
@@ -24,8 +26,11 @@ class FirebaseFunc {
       String voucherid,
       List<String> personpicsurls) async {
     try {
-      final itemsRef = FirebaseFirestore.instance.collection("DigitalIdentity");
-      itemsRef.doc(uniqueid).set({
+      final itemsRef = FirebaseFirestore.instance
+          .collection("DigitalIdentity")
+          .doc(chiefUserId);
+      //itemsRef.
+      itemsRef.collection(uniqueid).doc().set({
         "fname": fname,
         "lname": lname,
         "work": work,
@@ -84,6 +89,44 @@ class FirebaseFunc {
       downloadurlvalue = await (await uploadTask).ref.getDownloadURL();
     }
     return downloadurlvalue;
+  }
+
+  Future<bool> validateChiefPassword(String chiefid, String password) async {
+    bool isvalid = false;
+    try {
+      await FirebaseFirestore.instance
+          .collection('chief')
+          .doc(chiefid)
+          .get()
+          .then((value) {
+        var pass = value['passw'];
+
+        if (password == pass) {
+          isvalid = true;
+        }
+      });
+    } catch (e) {
+      print("Document Doesn't exist");
+    }
+    return isvalid;
+  }
+
+  Future<bool> validateChiefid(String chiefid) async {
+    bool documentexists = false;
+
+    try {
+      var collinfo = await FirebaseFirestore.instance
+          .collection('chief')
+          .doc(chiefid)
+          .get();
+      if (collinfo != null) {
+        documentexists = true;
+      }
+    } catch (e) {
+      print("Document Doesn't exist");
+    }
+
+    return documentexists;
   }
 
   Future readData(String uid) async {

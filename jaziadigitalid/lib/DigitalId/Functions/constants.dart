@@ -60,7 +60,7 @@ int getRandomNumber() {
   var code = rng.nextInt(900000) + 100000;
   random = int.parse(code.toString());
   randomNumber = random;
-  return random;
+  return randomNumber;
 }
 
 ///validate the code

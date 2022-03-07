@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/DigitalId/Functions/constants.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/customDrawer.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -21,6 +22,7 @@ class DIRegister extends StatefulWidget {
 
 class _DIRegisterState extends State<DIRegister> {
   int _activeStepIndex = 0;
+  bool isloading = false;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
@@ -126,52 +128,57 @@ class _DIRegisterState extends State<DIRegister> {
                       const SizedBox(
                         height: 15,
                       ),
-                      Container(
-                        width: 200,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlueAccent,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _imgObjs.isEmpty
-                                ? const Text("Add Photo")
-                                : const Text("Update Photos"),
-                            IconButton(
-                              onPressed: () async {
-                                var status = await Permission.camera.status;
-                                var storagestatus =
-                                    await Permission.storage.status;
-                                if ((status.isDenied) ||
-                                    (storagestatus.isDenied)) {
-                                  status.isDenied
-                                      ? await Permission.camera.request()
-                                      : await Permission.storage.request();
-                                  // We didn't ask for permission yet or the permission has been denied before but not permanently.
-                                }
-                                // Get max 5 images
-                                else {
-                                  final List<ImageObject>? objects =
-                                      await Navigator.of(context).push(
-                                          PageRouteBuilder(pageBuilder:
-                                              (context, animation, __) {
-                                    return const ImagePicker(maxCount: 3);
-                                  }));
+                      InkWell(
+                        onTap: () async {
+                          var status = await Permission.camera.status;
+                          var storagestatus = await Permission.storage.status;
+                          if ((status.isDenied) || (storagestatus.isDenied)) {
+                            status.isDenied
+                                ? await Permission.camera.request()
+                                : await Permission.storage.request();
+                            // We didn't ask for permission yet or the permission has been denied before but not permanently.
+                          }
+                          // Get max 5 images
+                          else {
+                            final List<ImageObject>? objects =
+                                await Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                        pageBuilder: (context, animation, __) {
+                              return const ImagePicker(maxCount: 3);
+                            }));
 
-                                  if ((objects?.length ?? 0) > 0) {
-                                    setState(() {
-                                      _imgObjs = objects!;
-                                    });
-                                  }
-                                }
-                              },
-                              icon: _imgObjs.length < 2
-                                  ? const Icon(Icons.add)
-                                  : const Icon(Icons.update_sharp),
-                            ),
-                          ],
+                            if ((objects?.length ?? 0) > 0) {
+                              setState(() {
+                                _imgObjs = objects!;
+                              });
+                            }
+                          }
+                        },
+                        child: Container(
+                          width: 300,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.lightBlueAccent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _imgObjs.isEmpty
+                                  ? const Text(
+                                      "Add Photo",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : const Text("Update Photos"),
+                              Icon(
+                                _imgObjs.length < 2
+                                    ? Icons.add
+                                    : Icons.update_sharp,
+                              )
+                            ],
+                          ),
                         ),
                       )
                     ],
@@ -206,20 +213,20 @@ class _DIRegisterState extends State<DIRegister> {
                 const SizedBox(
                   height: 8,
                 ),
-                DropdownButton<String>(
-                  hint: Text(_selectedMarital.toString()),
-                  items: <String>['Single', 'Married'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedMarital = value.toString();
-                    });
-                  },
-                )
+                // DropdownButton<String>(
+                //   hint: Text(_selectedMarital.toString()),
+                //   items: <String>['Single', 'Married'].map((String value) {
+                //     return DropdownMenuItem<String>(
+                //       value: value,
+                //       child: Text(value),
+                //     );
+                //   }).toList(),
+                //   onChanged: (value) {
+                //     setState(() {
+                //       _selectedMarital = value.toString();
+                //     });
+                //   },
+                // )
               ],
             ),
           ),
@@ -355,57 +362,72 @@ class _DIRegisterState extends State<DIRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          ' Digital Identity Registration Form',
-          style: TextStyle(fontSize: 16),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white12,
+          title: const Text(
+            ' Digital Identity Registration Form',
+            style: TextStyle(fontSize: 16),
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 14.0),
-        child: Stepper(
-          type: StepperType.vertical,
-          currentStep: _activeStepIndex,
-          steps: stepList(),
-          onStepContinue: () async {
-            if (_activeStepIndex < (stepList().length - 1)) {
+        backgroundColor: Colors.white,
+        drawer: const SafeArea(
+          child: CustomDrawer(),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(left: 14.0),
+          child: Stepper(
+            type: StepperType.vertical,
+            currentStep: _activeStepIndex,
+            steps: stepList(),
+            onStepContinue: () async {
+              if (_activeStepIndex < (stepList().length - 1)) {
+                setState(() {
+                  _activeStepIndex += 1;
+                });
+              } else {
+                setState(() {
+                  isloading = true;
+                });
+                print('Submited');
+
+                await performOperations();
+                //print set a unique 6 random numbers and send them
+                //add to the database
+                setState(() {
+                  isloading = false;
+                });
+                //  print(_imgObjs);
+                //await FirebaseFunc().uploadAllImages(_imgObjs);
+                print('Submited');
+
+                //!TODO:
+              }
+            },
+            onStepCancel: () {
+              if (_activeStepIndex == 0) {
+                return;
+              }
               setState(() {
-                _activeStepIndex += 1;
+                _activeStepIndex -= 1;
               });
-            } else {
-              print('Submited');
-
-              await performOperations();
-//print set a unique 6 random numbers and send them
-              //add to the database
-
-              //  print(_imgObjs);
-              //await FirebaseFunc().uploadAllImages(_imgObjs);
-              print('Submited');
-
-              //!TODO:
-            }
-          },
-          onStepCancel: () {
-            if (_activeStepIndex == 0) {
-              return;
-            }
-            setState(() {
-              _activeStepIndex -= 1;
-            });
-          },
-          onStepTapped: (int index) {
-            setState(() {
-              _activeStepIndex = index;
-            });
-          },
+            },
+            onStepTapped: (int index) {
+              setState(() {
+                _activeStepIndex = index;
+              });
+            },
+          ),
         ),
       ),
     );
   }
 
   Future saveDetails() async {
+    setState(() {
+      isloading = true;
+    });
     await FirebaseFunc().savePersonDetails(
         firstname.text.toString(),
         lastname.value.text.trim(),
@@ -421,6 +443,9 @@ class _DIRegisterState extends State<DIRegister> {
         _selectedVoucher,
         voucheruniqueid.value.text.trim(),
         await FirebaseFunc().uploadAllImages(_imgObjs));
+    setState(() {
+      isloading = false;
+    });
   }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
@@ -434,23 +459,36 @@ class _DIRegisterState extends State<DIRegister> {
               decoration: const InputDecoration(hintText: "verify code"),
             ),
             actions: [
-              TextButton(
-                  onPressed: () {
-                    validatecode(
-                            _textFieldController.value.text.trim().toString())
-                        ? saveDetails()
-                        : Fluttertoast.showToast(msg: "Incorrect Code Inputed");
-                  },
-                  child: const Text("Validate ")),
+              isloading
+                  ? const CircularProgressIndicator()
+                  : TextButton(
+                      onPressed: () {
+                        setState(() {
+                          isloading = true;
+                        });
+                        validatecode(_textFieldController.value.text
+                                .trim()
+                                .toString())
+                            ? saveDetails()
+                            : Fluttertoast.showToast(
+                                msg: "Incorrect Code Inputed");
+                        setState(() {
+                          isloading = false;
+                        });
+                      },
+                      child: const Text("Validate ")),
             ],
           );
         });
   }
 
+  ///Load the ima
   performOperations() async {
+    randomNumber = getRandomNumber();
+
     ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
-        "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${getRandomNumber().toString()}");
+        "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}");
     await _displayTextInputDialog(context);
     //display a popup box
   }

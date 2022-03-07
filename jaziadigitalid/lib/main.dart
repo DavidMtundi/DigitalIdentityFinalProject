@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
 import 'package:jaziadigitalid/mt940/updatedscreens/UploadPage.dart';
 
 const debug = true;
@@ -49,8 +51,9 @@ class FutureBuilderWidget extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           //Navigator.pushReplacement(context,
           //  MaterialPageRoute(builder: (context) => LoginScreen()));
-          // return DIRegister();
-          return Uploadpage();
+          return Login();
+          // return multistage
+          // return Uploadpage();
         }
 
         // Otherwise, show something whilst waiting for initialization to complete

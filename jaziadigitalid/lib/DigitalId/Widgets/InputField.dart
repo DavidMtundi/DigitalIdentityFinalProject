@@ -29,7 +29,7 @@ class _EditTextState extends State<EditText> {
       padding: const EdgeInsets.only(bottom: 8.0, left: 10.0, right: 10.0),
       child: TextFormField(
         validator: widget.formvalidator,
-        style: const TextStyle(fontSize: 14),
+        style: const TextStyle(fontSize: 15),
         obscureText: widget.isPassword,
         textAlign: TextAlign.center,
         controller: widget.textEditingController,
@@ -37,7 +37,7 @@ class _EditTextState extends State<EditText> {
         decoration: InputDecoration(
           fillColor: Theme.of(context).dividerColor,
           hintText: widget.title,
-          hintStyle: Theme.of(context).textTheme.headline6,
+          hintStyle: const TextStyle(fontSize: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(
@@ -46,7 +46,7 @@ class _EditTextState extends State<EditText> {
             ),
           ),
           filled: true,
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: const EdgeInsets.all(13),
         ),
       ),
     );
