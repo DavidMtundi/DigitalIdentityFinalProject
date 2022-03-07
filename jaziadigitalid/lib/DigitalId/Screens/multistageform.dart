@@ -4,11 +4,13 @@ import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:jaziadigitalid/Functions/constants.dart';
-import 'package:jaziadigitalid/Functions/firebasefunc.dart';
-import 'package:jaziadigitalid/Widgets/InputField.dart';
+import 'package:jaziadigitalid/DigitalId/Functions/constants.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+import '../Functions/firebasefunc.dart';
+import '../Widgets/InputField.dart';
 
 class DIRegister extends StatefulWidget {
   DIRegister({Key? key}) : super(key: key);

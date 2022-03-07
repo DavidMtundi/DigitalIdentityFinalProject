@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jaziadigitalid/Widgets/SearchWidget.dart';
-import 'package:jaziadigitalid/main.dart';
-import 'package:jaziadigitalid/mt940/Product.dart';
-import 'package:jaziadigitalid/mt940/checkboxstates.dart';
+import 'package:jaziadigitalid/mt940/updatedscreens/DownloadPage.dart';
+import 'package:jaziadigitalid/mt940/widgets/SearchWidget.dart';
+import 'package:jaziadigitalid/mt940/models/checkboxstates.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key}) : super(key: key);
@@ -15,18 +14,27 @@ class _MainPageState extends State<MainPage> {
   bool value = false;
   String query = '';
   late List<CheckBoxState> properties;
+  late List<CheckBoxState> allHeaderDetails;
+
+  late List<CheckBoxState> allTransactionDetails;
+
+  late List<CheckBoxState> allfooterDetails;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     properties = allProperties;
+    allHeaderDetails = headerDetails;
+    allTransactionDetails = transactiondetails;
+    allfooterDetails = footerdetails;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("MT940 Selection"),
+        title: const Text("Customize your MT940"),
         centerTitle: true,
       ),
       backgroundColor: Colors.white70,
@@ -39,11 +47,53 @@ class _MainPageState extends State<MainPage> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(12),
               children: [
-                buildGroupCheckbox(checkAllProperties),
+                buildAllCheckDetails(checkAllProperties),
                 const Divider(
                   color: Colors.white,
                 ),
-                ...properties.map(buildSingleCheckbox).toList(),
+                // ...properties.map(buildSingleCheckbox).toList(),
+              ],
+            ),
+            ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(12),
+              children: [
+                buildGroupCheckbox(checkallHeaders),
+                const Divider(
+                  color: Colors.white,
+                ),
+                ...allHeaderDetails.map(buildSingleCheckbox).toList(),
+              ],
+            ),
+            const Divider(
+              color: Colors.white,
+            ),
+            ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(12),
+              children: [
+                buildGroupCheckbox(checkalltransactions),
+                const Divider(
+                  color: Colors.white,
+                ),
+                ...allTransactionDetails.map(buildSingleCheckbox).toList(),
+              ],
+            ),
+            const Divider(
+              color: Colors.white,
+            ),
+            ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(12),
+              children: [
+                buildGroupCheckbox(checkallfooterDetails),
+                const Divider(
+                  color: Colors.white,
+                ),
+                ...allfooterDetails.map(buildSingleCheckbox).toList(),
               ],
             ),
           ],
@@ -52,16 +102,15 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             //navigate to the next page
-            printallchecked();
+            toDownload();
           },
           child: const Icon(Icons.navigate_next_rounded)),
     );
   }
 
-  void printallchecked() {
-    for (var item in allCheckedProperties) {
-      print(item);
-    }
+  toDownload() async {
+    Route route = MaterialPageRoute(builder: (context) => DownloadPage());
+    Navigator.push(context, route);
   }
 
   Widget buildSearch() => SearchWidget(
@@ -72,7 +121,7 @@ class _MainPageState extends State<MainPage> {
   void searchProperty(String query) {
     final propertysearch = allProperties.where((product) {
       final tittlesearch = product.title.toLowerCase();
-      final searchlower = query.toLowerCase();
+      final searchlower = query.trim().toLowerCase();
       return tittlesearch.contains(searchlower);
     }).toList();
     setState(() {
@@ -82,7 +131,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget buildSingleCheckbox(CheckBoxState checkbox) => CheckboxListTile(
-        controlAffinity: ListTileControlAffinity.leading,
+        controlAffinity: ListTileControlAffinity.platform,
         activeColor: Colors.red,
         title: Text(checkbox.title),
         value: checkbox.value,
@@ -96,14 +145,32 @@ class _MainPageState extends State<MainPage> {
           //  allCheckedProperties.add(checkbox.title);
         }),
       );
+  Widget buildAllCheckDetails(CheckBoxState checkbox) => CheckboxListTile(
+        controlAffinity: ListTileControlAffinity.leading,
+        activeColor: Colors.red,
+        subtitle: const Text(
+          "Selects all Properties",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        isThreeLine: true,
+        title: Text(
+          checkbox.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        value: checkbox.value,
+        onChanged: toggleGroupAllCheckBox,
+      );
   Widget buildGroupCheckbox(CheckBoxState checkbox) => CheckboxListTile(
         controlAffinity: ListTileControlAffinity.leading,
         activeColor: Colors.red,
-        title: Text(checkbox.title),
+        title: Text(
+          checkbox.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         value: checkbox.value,
         onChanged: toggleGroupCheckBox,
       );
-  void toggleGroupCheckBox(bool? value) {
+  void toggleGroupAllCheckBox(bool? value) {
     if (value == null) {
       return;
     }
@@ -124,6 +191,140 @@ class _MainPageState extends State<MainPage> {
       } else {
         setState(() {
           allCheckedProperties.clear();
+        });
+      }
+      // });
+    });
+  }
+
+  toggleGroupCheckBox(
+    bool? value,
+  ) {
+    if (value == null) {
+      return;
+    }
+    setState(() {
+      // setState(() {
+      checkAllProperties.value = value;
+      for (var property in allProperties) {
+        property.value = value;
+      }
+      if (value == true) {
+        for (var property in allProperties) {
+          setState(() {
+            allCheckedProperties.contains(property.title)
+                ? null
+                : allCheckedProperties.add(property.title);
+          });
+        }
+      } else {
+        setState(() {
+          allCheckedProperties.clear();
+        });
+      }
+      // });
+    });
+  }
+
+  toggleGroupCheckBox1(
+    bool? value,
+  ) {
+    if (value == null) {
+      return;
+    }
+    setState(() {
+      // setState(() {
+      checkallHeaders.value = value;
+      for (var property in allProperties) {
+        property.value = value;
+      }
+      if (value == true) {
+        for (var property in allHeaderDetails) {
+          setState(() {
+            allCheckedProperties.contains(property.index)
+                ? null
+                : allCheckedProperties.add(property.index);
+          });
+        }
+      } else {
+        setState(() {
+          for (var item in allHeaderDetails) {
+            if (allCheckedProperties.contains(item.index)) {
+              setState(() {
+                allCheckedProperties.remove(item.index);
+              });
+            }
+          }
+        });
+      }
+      // });
+    });
+  }
+
+  toggleGroupCheckBox2(
+    bool? value,
+  ) {
+    if (value == null) {
+      return;
+    }
+    setState(() {
+      // setState(() {
+      checkalltransactions.value = value;
+      for (var property in allTransactionDetails) {
+        property.value = value;
+      }
+      if (value == true) {
+        for (var property in allTransactionDetails) {
+          setState(() {
+            allCheckedProperties.contains(property.index)
+                ? null
+                : allCheckedProperties.add(property.index);
+          });
+        }
+      } else {
+        setState(() {
+          for (var item in allTransactionDetails) {
+            if (allCheckedProperties.contains(item.index)) {
+              setState(() {
+                allCheckedProperties.remove(item.index);
+              });
+            }
+          }
+        });
+      }
+      // });
+    });
+  }
+
+  toggleGroupCheckBox3(
+    bool? value,
+  ) {
+    if (value == null) {
+      return;
+    }
+    setState(() {
+      // setState(() {
+      checkallfooterDetails.value = value;
+      for (var property in allfooterDetails) {
+        property.value = value;
+      }
+      if (value == true) {
+        for (var property in allfooterDetails) {
+          setState(() {
+            allCheckedProperties.contains(property.index)
+                ? null
+                : allCheckedProperties.add(property.index);
+          });
+        }
+      } else {
+        setState(() {
+          for (var item in allfooterDetails) {
+            if (allCheckedProperties.contains(item.index)) {
+              setState(() {
+                allCheckedProperties.remove(item.index);
+              });
+            }
+          }
         });
       }
       // });

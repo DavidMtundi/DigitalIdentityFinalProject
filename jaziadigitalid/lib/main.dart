@@ -4,9 +4,7 @@ import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:jaziadigitalid/mt940/mainscreen.dart';
-import 'package:jaziadigitalid/mt940/updatedscreens/MainPage.dart';
-import 'package:jaziadigitalid/multistageform.dart';
+import 'package:jaziadigitalid/mt940/updatedscreens/UploadPage.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +37,7 @@ class FutureBuilderWidget extends StatelessWidget {
           //    MaterialPageRoute(
           //       builder: (context) => SomethingWentWrongScreen()));
           return const Center(
-            child: const Text("Something went wrong"),
+            child: Text("Something went wrong"),
           );
         }
 
@@ -48,7 +46,7 @@ class FutureBuilderWidget extends StatelessWidget {
           //Navigator.pushReplacement(context,
           //  MaterialPageRoute(builder: (context) => LoginScreen()));
           // return DIRegister();
-          return MainPage();
+          return Uploadpage();
         }
 
         // Otherwise, show something whilst waiting for initialization to complete

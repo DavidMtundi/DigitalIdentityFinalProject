@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jaziadigitalid/mt940/Product.dart';
+import 'package:jaziadigitalid/mt940/models/Product.dart';
 
 class Item extends StatefulWidget {
   final Product product;
