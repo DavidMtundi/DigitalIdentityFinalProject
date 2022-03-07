@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/ChiefLoginDialog.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
 
-class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({
+class ChiefDrawer extends StatelessWidget {
+  const ChiefDrawer({
     Key? key,
   }) : super(key: key);
 
@@ -96,26 +97,6 @@ class CustomDrawer extends StatelessWidget {
               ),
 
               ListTile(
-                title: const Text('Login as Chief  ?'),
-                leading: const Icon(Icons.badge),
-                onTap: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ChiefLoginDialog();
-                      });
-                  //recordShelves();
-                  //   await _resetShelvesDialog();
-                },
-              ),
-              ListTile(
-                title: const Text('Switch Account'),
-                leading: const Icon(Icons.swap_horizontal_circle_outlined),
-                onTap: () {
-                  /* change to another cafeteria / verify access first*/
-                },
-              ),
-              ListTile(
                 title: const Text('Contact US'),
                 leading: const Icon(Icons.headset_mic),
                 onTap: () async {
@@ -132,6 +113,9 @@ class CustomDrawer extends StatelessWidget {
                         title: const Text('SignOut'),
                         onTap: () async {
                           await AuthServiceUpdated().signOut();
+                          Route route = MaterialPageRoute(
+                              builder: (context) => DIRegister());
+                          Navigator.pushReplacement(context, route);
                         },
                         leading: const Icon(Icons.link_off),
                         enableFeedback: true,

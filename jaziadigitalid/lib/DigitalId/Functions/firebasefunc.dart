@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 String chiefUserId = "ChiefId";
 
 class FirebaseFunc {
   List<String> downloadedUrls = [];
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
   String uniqueid = DateTime.now().millisecondsSinceEpoch.toString();
   Future<void> savePersonDetails(
@@ -26,11 +28,12 @@ class FirebaseFunc {
       String voucherid,
       List<String> personpicsurls) async {
     try {
-      final itemsRef = FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection("DigitalIdentity")
-          .doc(chiefUserId);
-      //itemsRef.
-      itemsRef.collection(uniqueid).doc().set({
+          .doc(chiefUserId)
+          .collection("Vouched")
+          .doc(_auth.currentUser!.uid)
+          .set({
         "fname": fname,
         "lname": lname,
         "work": work,
@@ -45,7 +48,7 @@ class FirebaseFunc {
         "vouchertype": vouchertype,
         "voucherid": voucherid,
         "DigitalIdentity": uniqueid,
-        "personpics": FieldValue.arrayUnion(downloadedUrls),
+        "personpics": FieldValue.arrayUnion(personpicsurls),
       });
     } catch (ex) {
       // setState(() {
@@ -56,43 +59,41 @@ class FirebaseFunc {
 
 //saving the profiles
   Future uploadAllImages(images) async {
-//get all the images and save them
     if (images.isNotEmpty) {
       for (int i = 0; i < images.length; i++) {
-        // downloadedUrls[i] = await _uploadandSaveimage(images[i]);
         downloadedUrls.add(await _uploadandSaveimage(images[i]));
       }
     } else {
       Fluttertoast.showToast(
           msg: "Please select atleast one image to continue");
     }
+    print("Download Urls is " + downloadedUrls[0].toString());
     return downloadedUrls;
   }
 
   Future<String> _uploadandSaveimage(mFileImage) async {
     // requestpermissions();
     String downloadurlvalue = "";
-    if (mFileImage == null) {
-      //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //  content: const Text("Unable to pick the File please Try again")));
-    } else {
-      // String imageFileName = DateTime.now().millisecondsSinceEpoch.toString();
+    if (mFileImage != null) {
+      String imageFileName = DateTime.now().millisecondsSinceEpoch.toString();
 
       final Reference storagereference =
           FirebaseStorage.instance.ref().child("profiles");
       // print(mFileImage['originalPath'].toString());
 
       UploadTask uploadTask = storagereference
-          .child("image_$uniqueid.jpg")
+          .child("image_$imageFileName.jpg")
           .putFile(File(mFileImage.modifiedPath.toString()));
 
       downloadurlvalue = await (await uploadTask).ref.getDownloadURL();
+      print("Download Url is " + downloadurlvalue);
     }
     return downloadurlvalue;
   }
 
   Future<bool> validateChiefPassword(String chiefid, String password) async {
     bool isvalid = false;
+    print("The chiefid entered is" + chiefid.toString());
     try {
       await FirebaseFirestore.instance
           .collection('chief')
@@ -100,6 +101,7 @@ class FirebaseFunc {
           .get()
           .then((value) {
         var pass = value['passw'];
+        print("the passsword requrierd is" + pass.toString());
 
         if (password == pass) {
           isvalid = true;

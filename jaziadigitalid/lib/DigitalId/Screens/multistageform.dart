@@ -365,7 +365,7 @@ class _DIRegisterState extends State<DIRegister> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white12,
+          backgroundColor: Colors.black45,
           title: const Text(
             ' Digital Identity Registration Form',
             style: TextStyle(fontSize: 16),
@@ -425,9 +425,10 @@ class _DIRegisterState extends State<DIRegister> {
   }
 
   Future saveDetails() async {
-    setState(() {
-      isloading = true;
-    });
+    List<String> allpics = await FirebaseFunc().uploadAllImages(_imgObjs);
+    for (var item in allpics) {
+      print("The urls is " + item.toString());
+    }
     await FirebaseFunc().savePersonDetails(
         firstname.text.toString(),
         lastname.value.text.trim(),
@@ -442,10 +443,7 @@ class _DIRegisterState extends State<DIRegister> {
         village.value.text.trim(),
         _selectedVoucher,
         voucheruniqueid.value.text.trim(),
-        await FirebaseFunc().uploadAllImages(_imgObjs));
-    setState(() {
-      isloading = false;
-    });
+        allpics);
   }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
@@ -462,19 +460,15 @@ class _DIRegisterState extends State<DIRegister> {
               isloading
                   ? const CircularProgressIndicator()
                   : TextButton(
-                      onPressed: () {
-                        setState(() {
-                          isloading = true;
-                        });
-                        validatecode(_textFieldController.value.text
-                                .trim()
-                                .toString())
-                            ? saveDetails()
-                            : Fluttertoast.showToast(
-                                msg: "Incorrect Code Inputed");
-                        setState(() {
-                          isloading = false;
-                        });
+                      onPressed: () async {
+                        if (validatecode(_textFieldController.value.text
+                            .trim()
+                            .toString())) {
+                          await saveDetails()
+                              .then((value) => Navigator.pop(context));
+                        }
+
+                        Fluttertoast.showToast(msg: "Incorrect Code Inputed");
                       },
                       child: const Text("Validate ")),
             ],
@@ -489,6 +483,9 @@ class _DIRegisterState extends State<DIRegister> {
     ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
         "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}");
+    setState(() {
+      isloading = false;
+    });
     await _displayTextInputDialog(context);
     //display a popup box
   }

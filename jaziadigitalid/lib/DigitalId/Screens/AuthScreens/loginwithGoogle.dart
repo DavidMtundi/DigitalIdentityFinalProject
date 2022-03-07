@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authservice.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -190,7 +191,9 @@ class _LoginState extends State<Login> {
                             context,
                             MaterialPageRoute(builder: (context) => AuthService().signInWithGoogle()),
                           );*/
-                        await AuthService().signInWithGoogle();
+                        await AuthServiceUpdated()
+                            .signInWithGoogle()
+                            .then((value) => AuthServiceUpdated().handleAuth());
                         //AuthService().handleAuth();
                       },
                       label: const Text(

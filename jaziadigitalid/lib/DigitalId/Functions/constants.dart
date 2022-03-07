@@ -41,7 +41,7 @@ late TwilioFlutter twilioFlutter;
 
 ///this function sends a twilio message
 Future SendTwilioMessage(String phone, String body) async {
-  randomNumber = getRandomNumber();
+  //randomNumber = getRandomNumber();
   twilioFlutter = TwilioFlutter(
       accountSid: DigitalId.twilioSID,
       authToken: DigitalId.twilioauthtoken,
@@ -67,9 +67,11 @@ int getRandomNumber() {
 bool validatecode(String value) {
   bool isvalid = false;
   print(randomNumber.toString());
-  if (int.parse(value) == randomNumber) {
-    isvalid = true;
-  }
+  try {
+    if (int.parse(value) == randomNumber) {
+      isvalid = true;
+    }
+  } catch (e) {}
   return isvalid;
 }
 

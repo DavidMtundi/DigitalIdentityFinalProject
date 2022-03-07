@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jaziadigitalid/DigitalId/Functions/firebasefunc.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/ChiefScreen/MainScreenChief.dart';
 
 TextStyle _style = GoogleFonts.varelaRound();
 
@@ -40,10 +41,10 @@ class _ChiefLoginDialogState extends State<ChiefLoginDialog> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: TextFormField(
-                  controller: controllerpassword,
+                  controller: controlleruserid,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
-                      return 'amount is required';
+                      return 'Chief uid is required';
                     }
                     return null;
                   },
@@ -67,7 +68,7 @@ class _ChiefLoginDialogState extends State<ChiefLoginDialog> {
               child: SizedBox(
                 width: double.infinity,
                 child: TextFormField(
-                  controller: controlleruserid,
+                  controller: controllerpassword,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
                       return 'User Password is required';
@@ -96,7 +97,7 @@ class _ChiefLoginDialogState extends State<ChiefLoginDialog> {
                       controlleruserid.value.text.trim().toString())
                   ? await FirebaseFunc().validateChiefPassword(
                           controlleruserid.value.text.trim().toString(),
-                          controllerpassword.text.trim().toString())
+                          controllerpassword.value.text.trim().toString())
                       ? perfomValidation()
                       : Fluttertoast.showToast(
                           msg: "Please Enter Correct Password")
@@ -113,5 +114,10 @@ class _ChiefLoginDialogState extends State<ChiefLoginDialog> {
     );
   }
 
-  perfomValidation() {}
+  perfomValidation() async {
+    Navigator.pop(context);
+    MaterialPageRoute route =
+        MaterialPageRoute(builder: ((context) => MainScreenChief()));
+    Navigator.pushReplacement(context, route);
+  }
 }
