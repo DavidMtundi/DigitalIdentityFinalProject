@@ -40,10 +40,7 @@ class FutureBuilderWidget extends StatelessWidget {
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {
-          // Navigator.push(
-          //    context,
-          //    MaterialPageRoute(
-          //       builder: (context) => SomethingWentWrongScreen()));
+          
           return const Center(
             child: Text("Something went wrong"),
           );
@@ -54,9 +51,9 @@ class FutureBuilderWidget extends StatelessWidget {
           //Navigator.pushReplacement(context,
           //  MaterialPageRoute(builder: (context) => LoginScreen()));
           //return Login();
-          // return AuthServiceUpdated().handleAuth();
+           return AuthServiceUpdated().handleAuth();
           //return Uploadpage();
-          return MainPage();
+          //return MainPage();
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
