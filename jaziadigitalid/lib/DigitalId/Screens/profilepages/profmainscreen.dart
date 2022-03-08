@@ -15,15 +15,18 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.,
       appBar: buildAppBar(context),
       drawer: const CustomDrawer(),
       body: StreamBuilder<QuerySnapshot>(
           stream: firestore
-              .collectionGroup("Vouched")
+              .collection("DigitalIdentity")
+              .doc("ChiefId")
+              .collection("Vouched")
               .where("uid", isEqualTo: auth.currentUser!.uid)
               .snapshots(),
           builder: (context, snapshot) {
-            return  snapshot.hasData
+            return snapshot.hasData
                 ? ListView(
                     physics: const BouncingScrollPhysics(),
                     children: [
@@ -63,7 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       //buildAbout(user),
                     ],
                   )
-                : Text("wiiii");
+                : CircularProgressIndicator();
           }),
     );
   }
@@ -73,12 +76,12 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             firstheader,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           ),
           const SizedBox(height: 10),
           Text(
             secondHeader,
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           )
         ],
       );
@@ -88,12 +91,12 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Text(
             firstname,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            style: const TextStyle(color: Colors.grey, fontSize: 20),
           ),
           const SizedBox(height: 10),
           Text(
             sname,
-            style: const TextStyle(color: Colors.grey),
+            style: const TextStyle(color: Colors.grey, fontSize: 20),
           )
         ],
       );

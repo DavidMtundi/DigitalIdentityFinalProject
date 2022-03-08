@@ -41,7 +41,9 @@ class AuthServiceUpdated {
           if (snapshot.hasData) {
             return StreamBuilder<Object>(
                 stream: firestore
-                    .collectionGroup("Vouched")
+                    .collection("DigitalIdentity")
+                    .doc("ChiefId")
+                    .collection("Vouched")
                     .where("uid", isEqualTo: auth.currentUser!.uid)
                     .snapshots(),
                 builder: (context, snapshot) {

@@ -489,16 +489,13 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
                   ? const CircularProgressIndicator()
                   : TextButton(
                       onPressed: () async {
-                        setState(() {
-                          progressloading = true;
-                        });
+                       
                         if (validatecode(_textFieldController.value.text
                             .trim()
                             .toString())) {
                           await saveDetails();
-                          setState(() {
-                            progressloading = false;
-                          });
+                          
+                          Navigator.of(context).pop();
                           Route route = MaterialPageRoute(
                               builder: ((context) => ProfilePage()));
                           Navigator.pushReplacement(context, route);
