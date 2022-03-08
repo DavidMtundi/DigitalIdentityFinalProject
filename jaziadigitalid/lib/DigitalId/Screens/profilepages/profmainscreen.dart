@@ -15,7 +15,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.,
+    
       appBar: buildAppBar(context),
       drawer: const CustomDrawer(),
       body: StreamBuilder<QuerySnapshot>(

@@ -5,7 +5,8 @@ AppBar buildAppBar(BuildContext context) {
   final icon = CupertinoIcons.moon_stars;
 
   return AppBar(
-    backgroundColor: Colors.white54,
+    backgroundColor: Colors.black26,
     elevation: 0,
+    title: Text(""),
   );
 }
