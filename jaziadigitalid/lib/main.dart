@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
+import 'package:jaziadigitalid/mt940/updatedscreens/MainPage.dart';
 import 'package:jaziadigitalid/mt940/updatedscreens/UploadPage.dart';
 
 const debug = true;
@@ -53,8 +54,9 @@ class FutureBuilderWidget extends StatelessWidget {
           //Navigator.pushReplacement(context,
           //  MaterialPageRoute(builder: (context) => LoginScreen()));
           //return Login();
-          return AuthServiceUpdated().handleAuth();
-          // return Uploadpage();
+          // return AuthServiceUpdated().handleAuth();
+          //return Uploadpage();
+          return MainPage();
         }
 
         // Otherwise, show something whilst waiting for initialization to complete

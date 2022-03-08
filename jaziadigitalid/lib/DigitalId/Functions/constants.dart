@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twilio_flutter/twilio_flutter.dart';
@@ -66,7 +65,6 @@ int getRandomNumber() {
 ///validate the code
 bool validatecode(String value) {
   bool isvalid = false;
-  print(randomNumber.toString());
   try {
     if (int.parse(value) == randomNumber) {
       isvalid = true;

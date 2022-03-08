@@ -25,9 +25,7 @@ class BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TextEditingController? nameController;
-    //TextEditingController? priceController;
-    //TextEditingController? detailController;
+
 
     return SizedBox(
       height: MediaQuery.of(context).size.height / 4,

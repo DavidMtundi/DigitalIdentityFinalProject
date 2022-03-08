@@ -213,20 +213,6 @@ class _DIRegisterState extends State<DIRegister> {
                 const SizedBox(
                   height: 8,
                 ),
-                // DropdownButton<String>(
-                //   hint: Text(_selectedMarital.toString()),
-                //   items: <String>['Single', 'Married'].map((String value) {
-                //     return DropdownMenuItem<String>(
-                //       value: value,
-                //       child: Text(value),
-                //     );
-                //   }).toList(),
-                //   onChanged: (value) {
-                //     setState(() {
-                //       _selectedMarital = value.toString();
-                //     });
-                //   },
-                // )
               ],
             ),
           ),
@@ -383,26 +369,34 @@ class _DIRegisterState extends State<DIRegister> {
             steps: stepList(),
             onStepContinue: () async {
               if (_activeStepIndex < (stepList().length - 1)) {
-                setState(() {
-                  _activeStepIndex += 1;
-                });
+                if (_formKeys[_activeStepIndex].currentState!.validate()) {
+                  setState(() {
+                    _activeStepIndex += 1;
+                  });
+                }
               } else {
                 setState(() {
                   isloading = true;
                 });
-                print('Submited');
 
-                await performOperations();
-                //print set a unique 6 random numbers and send them
-                //add to the database
+                bool isvalid = _formKeys[0].currentState!.validate() &&
+                    _formKeys[1].currentState!.validate() &&
+                    _formKeys[2].currentState!.validate() &&
+                    _formKeys[3].currentState!.validate();
+                if (isvalid) {
+                  await performOperations();
+                  setState(() {});
+                  await _displayTextInputDialog(context);
+                  setState(() {
+                    isloading = false;
+                  });
+                } else {
+                  print("cannot do so");
+                }
+
                 setState(() {
                   isloading = false;
                 });
-                //  print(_imgObjs);
-                //await FirebaseFunc().uploadAllImages(_imgObjs);
-                print('Submited');
-
-                //!TODO:
               }
             },
             onStepCancel: () {
@@ -413,11 +407,11 @@ class _DIRegisterState extends State<DIRegister> {
                 _activeStepIndex -= 1;
               });
             },
-            onStepTapped: (int index) {
-              setState(() {
-                _activeStepIndex = index;
-              });
-            },
+            // onStepTapped: (int index) {
+            //   setState(() {
+            //     _activeStepIndex = index;
+            //   });
+            // },
           ),
         ),
       ),
@@ -483,10 +477,9 @@ class _DIRegisterState extends State<DIRegister> {
     ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
         "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}");
-    setState(() {
-      isloading = false;
-    });
-    await _displayTextInputDialog(context);
+    // setState(() {
+    //   isloading = false;
+    // });
     //display a popup box
   }
 }

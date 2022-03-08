@@ -2,64 +2,35 @@ class CheckBoxState {
   final String title;
   bool value;
   int index;
-  CheckBoxState({
-    required this.title,
-    this.value = false,
-    required this.index
-  });
+  String name;
+  CheckBoxState(
+      {required this.title,
+      this.value = false,
+      required this.index,
+      required this.name});
 }
 
-final checkAllProperties = CheckBoxState(
-  title: "All Properties",
-  index: 23
-);
-final checkallHeaders = CheckBoxState(title: "All Header Details", index: 1);
-final headerDetails = [
-  CheckBoxState(title: "Statement Date", index: 4),
-  CheckBoxState(title: "Account  Number", index: 5),
-  CheckBoxState(title: "Bank Statement Number", index: 6),
-  CheckBoxState(title: "Opening Balance", index: 7),
-];
-final checkalltransactions = CheckBoxState(title: "All Transaction Details", index: 2);
-final transactiondetails = [
-  CheckBoxState(title: "Transaction Date", index: 8),
-  CheckBoxState(title: "Posting  Date",index: 9),
-  CheckBoxState(title: "is Credit", index: 10),
-  CheckBoxState(title: "Currency", index: 11),
-  CheckBoxState(title: "Transaction Code", index: 12),
-  CheckBoxState(title: "Transaction Type", index: 13),
-];
+final checkAllProperties =
+    CheckBoxState(title: "All Properties", index: 23, name: "All");
+final checkallHeaders =
+    CheckBoxState(title: "All Header Details", index: 1, name: "Headers");
 
-final checkallfooterDetails = CheckBoxState(title: "All Footer Details", index: 3);
-final footerdetails = [
-  CheckBoxState(title: " Date", index: 14),
-  CheckBoxState(title: "Currency", index: 15),
-  CheckBoxState(title: "Amount", index: 16),
-  CheckBoxState(title: "is Credit", index: 17),
-  CheckBoxState(title: "Available Balance", index: 18),
-  CheckBoxState(title: "is Credit", index: 19),
-  CheckBoxState(title: "Currency", index: 20),
-  CheckBoxState(title: "Amount", index: 21),
-];
+final checkalltransactions = CheckBoxState(
+    title: "All Transaction Details", index: 2, name: "Transaction");
+
+final checkallfooterDetails =
+    CheckBoxState(title: "All Footer Details", index: 3, name: "Footer");
 
 final allCheckedProperties = [];
 final allProperties = [
-  CheckBoxState(title: "Statement Date", index: 4),
-  CheckBoxState(title: "Account  Number", index: 5),
-  CheckBoxState(title: "Bank Statement Number", index: 6),
-  CheckBoxState(title: "Opening Balance", index: 7),
-  CheckBoxState(title: "Transaction Date", index: 8),
-  CheckBoxState(title: "Posting  Date", index: 9),
-  CheckBoxState(title: "is Credit", index: 10),
-  CheckBoxState(title: "Currency", index: 11),
-  CheckBoxState(title: "Transaction Code", index: 12),
-  CheckBoxState(title: "Transaction Type", index: 13),
-  CheckBoxState(title: " Date", index: 14),
-  CheckBoxState(title: "Currency", index: 15),
-  CheckBoxState(title: "Amount", index: 16),
-  CheckBoxState(title: "is Credit", index: 17),
-  CheckBoxState(title: "Available Balance", index: 18),
-  CheckBoxState(title: "is Credit", index: 19),
-  CheckBoxState(title: "Currency", index: 20),
-  CheckBoxState(title: "Amount", index: 21),
+  CheckBoxState(title: "Statement Date", index: 4, name: "valueDate"),
+  CheckBoxState(title: "Account  Number", index: 5, name: "accountId"),
+  CheckBoxState(title: "Opening Balance", index: 7, name: "openingBalance"),
+  CheckBoxState(title: "Transaction Date", index: 8, name: "closingBalance"),
+  // CheckBoxState(title: "Posting  Date", index: 9,name: ),
+  CheckBoxState(title: "is Credit", index: 10, name: "credit"),
+  CheckBoxState(title: "Currency", index: 11, name: "currency"),
+  CheckBoxState(title: "Transaction Code", index: 12, name: "code"),
+  CheckBoxState(title: "Is Debit", index: 13, name: "debit"),
+  CheckBoxState(title: " Date", index: 14, name: "entryDate"),
 ];

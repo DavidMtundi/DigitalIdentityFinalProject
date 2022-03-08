@@ -14,20 +14,12 @@ class _MainPageState extends State<MainPage> {
   bool value = false;
   String query = '';
   late List<CheckBoxState> properties;
-  late List<CheckBoxState> allHeaderDetails;
-
-  late List<CheckBoxState> allTransactionDetails;
-
-  late List<CheckBoxState> allfooterDetails;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     properties = allProperties;
-    allHeaderDetails = headerDetails;
-    allTransactionDetails = transactiondetails;
-    allfooterDetails = footerdetails;
   }
 
   @override
@@ -59,11 +51,14 @@ class _MainPageState extends State<MainPage> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(12),
               children: [
-                buildGroupCheckbox(checkallHeaders),
+                buildGroupCheckbox1(checkallHeaders),
                 const Divider(
                   color: Colors.white,
                 ),
-                ...allHeaderDetails.map(buildSingleCheckbox).toList(),
+                ...properties
+                    .where((element) => element.index < 6)
+                    .map(buildSingleCheckbox)
+                    .toList(),
               ],
             ),
             const Divider(
@@ -74,11 +69,14 @@ class _MainPageState extends State<MainPage> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(12),
               children: [
-                buildGroupCheckbox(checkalltransactions),
+                buildGroupCheckbox2(checkalltransactions),
                 const Divider(
                   color: Colors.white,
                 ),
-                ...allTransactionDetails.map(buildSingleCheckbox).toList(),
+                ...properties
+                    .where((element) => element.index < 13 && element.index > 6)
+                    .map(buildSingleCheckbox)
+                    .toList(),
               ],
             ),
             const Divider(
@@ -89,11 +87,15 @@ class _MainPageState extends State<MainPage> {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(12),
               children: [
-                buildGroupCheckbox(checkallfooterDetails),
+                buildGroupCheckbox3(checkallfooterDetails),
                 const Divider(
                   color: Colors.white,
                 ),
-                ...allfooterDetails.map(buildSingleCheckbox).toList(),
+                ...properties
+                    .where(
+                        (element) => element.index > 13 && element.index < 20)
+                    .map(buildSingleCheckbox)
+                    .toList(),
               ],
             ),
           ],
@@ -109,6 +111,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   toDownload() async {
+    print(allCheckedProperties);
     Route route = MaterialPageRoute(builder: (context) => DownloadPage());
     Navigator.push(context, route);
   }
@@ -138,11 +141,11 @@ class _MainPageState extends State<MainPage> {
         onChanged: (value) => setState(() {
           checkbox.value = value!;
           checkAllProperties.value =
-              allProperties.every((notification) => notification.value);
-          allCheckedProperties.contains(checkbox.title)
-              ? allCheckedProperties.remove(checkbox.title)
-              : allCheckedProperties.add(checkbox.title);
-          //  allCheckedProperties.add(checkbox.title);
+              properties.every((notification) => notification.value);
+          allCheckedProperties.contains(checkbox.name)
+              ? allCheckedProperties.remove(checkbox.name)
+              : allCheckedProperties.add(checkbox.name);
+          //  allCheckedProperties.add(checkbox.index);
         }),
       );
   Widget buildAllCheckDetails(CheckBoxState checkbox) => CheckboxListTile(
@@ -160,7 +163,7 @@ class _MainPageState extends State<MainPage> {
         value: checkbox.value,
         onChanged: toggleGroupAllCheckBox,
       );
-  Widget buildGroupCheckbox(CheckBoxState checkbox) => CheckboxListTile(
+  Widget buildGroupCheckbox2(CheckBoxState checkbox) => CheckboxListTile(
         controlAffinity: ListTileControlAffinity.leading,
         activeColor: Colors.red,
         title: Text(
@@ -168,7 +171,27 @@ class _MainPageState extends State<MainPage> {
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         value: checkbox.value,
-        onChanged: toggleGroupCheckBox,
+        onChanged: toggleGroupCheckBox2,
+      );
+  Widget buildGroupCheckbox1(CheckBoxState checkbox) => CheckboxListTile(
+        controlAffinity: ListTileControlAffinity.leading,
+        activeColor: Colors.red,
+        title: Text(
+          checkbox.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        value: checkbox.value,
+        onChanged: toggleGroupCheckBox1,
+      );
+  Widget buildGroupCheckbox3(CheckBoxState checkbox) => CheckboxListTile(
+        controlAffinity: ListTileControlAffinity.leading,
+        activeColor: Colors.red,
+        title: Text(
+          checkbox.title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        value: checkbox.value,
+        onChanged: toggleGroupCheckBox3,
       );
   void toggleGroupAllCheckBox(bool? value) {
     if (value == null) {
@@ -177,44 +200,15 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       // setState(() {
       checkAllProperties.value = value;
-      for (var property in allProperties) {
+      for (var property in properties) {
         property.value = value;
       }
       if (value == true) {
-        for (var property in allProperties) {
+        for (var property in properties) {
           setState(() {
-            allCheckedProperties.contains(property.title)
+            allCheckedProperties.contains(property.name)
                 ? null
-                : allCheckedProperties.add(property.title);
-          });
-        }
-      } else {
-        setState(() {
-          allCheckedProperties.clear();
-        });
-      }
-      // });
-    });
-  }
-
-  toggleGroupCheckBox(
-    bool? value,
-  ) {
-    if (value == null) {
-      return;
-    }
-    setState(() {
-      // setState(() {
-      checkAllProperties.value = value;
-      for (var property in allProperties) {
-        property.value = value;
-      }
-      if (value == true) {
-        for (var property in allProperties) {
-          setState(() {
-            allCheckedProperties.contains(property.title)
-                ? null
-                : allCheckedProperties.add(property.title);
+                : allCheckedProperties.add(property.name);
           });
         }
       } else {
@@ -235,23 +229,24 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       // setState(() {
       checkallHeaders.value = value;
-      for (var property in allProperties) {
+      for (var property in properties.where((element) => element.index < 7)) {
         property.value = value;
       }
       if (value == true) {
-        for (var property in allHeaderDetails) {
+        for (var property in properties.where((element) => element.index < 7)) {
           setState(() {
-            allCheckedProperties.contains(property.index)
+            allCheckedProperties.contains(property.name)
                 ? null
-                : allCheckedProperties.add(property.index);
+                : allCheckedProperties.add(property.name);
           });
         }
       } else {
         setState(() {
-          for (var item in allHeaderDetails) {
-            if (allCheckedProperties.contains(item.index)) {
+          for (var item in properties.where((element) => element.index < 7)) {
+            if (allCheckedProperties.contains(item.name)) {
               setState(() {
-                allCheckedProperties.remove(item.index);
+                allCheckedProperties.remove(item.name);
+                checkAllProperties.value = value;
               });
             }
           }
@@ -270,23 +265,27 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       // setState(() {
       checkalltransactions.value = value;
-      for (var property in allTransactionDetails) {
+      for (var property in properties
+          .where((element) => element.index > 6 && element.index < 14)) {
         property.value = value;
       }
       if (value == true) {
-        for (var property in allTransactionDetails) {
+        for (var property in properties
+            .where((element) => element.index > 7 && element.index < 14)) {
           setState(() {
-            allCheckedProperties.contains(property.index)
+            allCheckedProperties.contains(property.name)
                 ? null
-                : allCheckedProperties.add(property.index);
+                : allCheckedProperties.add(property.name);
           });
         }
       } else {
         setState(() {
-          for (var item in allTransactionDetails) {
-            if (allCheckedProperties.contains(item.index)) {
+          for (var item in properties
+              .where((element) => element.index > 7 && element.index < 14)) {
+            if (allCheckedProperties.contains(item.name)) {
               setState(() {
-                allCheckedProperties.remove(item.index);
+                allCheckedProperties.remove(item.name);
+                checkAllProperties.value = value;
               });
             }
           }
@@ -305,23 +304,25 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       // setState(() {
       checkallfooterDetails.value = value;
-      for (var property in allfooterDetails) {
+      for (var property in properties.where((element) => element.index > 12)) {
         property.value = value;
       }
       if (value == true) {
-        for (var property in allfooterDetails) {
+        for (var property
+            in properties.where((element) => element.index > 12)) {
           setState(() {
-            allCheckedProperties.contains(property.index)
+            allCheckedProperties.contains(property.name)
                 ? null
-                : allCheckedProperties.add(property.index);
+                : allCheckedProperties.add(property.name);
           });
         }
       } else {
         setState(() {
-          for (var item in allfooterDetails) {
-            if (allCheckedProperties.contains(item.index)) {
+          for (var item in properties.where((element) => element.index > 12)) {
+            if (allCheckedProperties.contains(item.name)) {
               setState(() {
-                allCheckedProperties.remove(item.index);
+                allCheckedProperties.remove(item.name);
+                checkAllProperties.value = value;
               });
             }
           }

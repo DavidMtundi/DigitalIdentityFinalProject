@@ -67,7 +67,6 @@ class FirebaseFunc {
       Fluttertoast.showToast(
           msg: "Please select atleast one image to continue");
     }
-    print("Download Urls is " + downloadedUrls[0].toString());
     return downloadedUrls;
   }
 
@@ -86,14 +85,12 @@ class FirebaseFunc {
           .putFile(File(mFileImage.modifiedPath.toString()));
 
       downloadurlvalue = await (await uploadTask).ref.getDownloadURL();
-      print("Download Url is " + downloadurlvalue);
     }
     return downloadurlvalue;
   }
 
   Future<bool> validateChiefPassword(String chiefid, String password) async {
     bool isvalid = false;
-    print("The chiefid entered is" + chiefid.toString());
     try {
       await FirebaseFirestore.instance
           .collection('chief')
@@ -101,14 +98,12 @@ class FirebaseFunc {
           .get()
           .then((value) {
         var pass = value['passw'];
-        print("the passsword requrierd is" + pass.toString());
 
         if (password == pass) {
           isvalid = true;
         }
       });
     } catch (e) {
-      print("Document Doesn't exist");
     }
     return isvalid;
   }
