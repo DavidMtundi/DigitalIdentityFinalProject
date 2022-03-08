@@ -34,6 +34,7 @@ class FirebaseFunc {
           .collection("Vouched")
           .doc(_auth.currentUser!.uid)
           .set({
+        "uid": _auth.currentUser!.uid,
         "fname": fname,
         "lname": lname,
         "work": work,
@@ -103,8 +104,7 @@ class FirebaseFunc {
           isvalid = true;
         }
       });
-    } catch (e) {
-    }
+    } catch (e) {}
     return isvalid;
   }
 

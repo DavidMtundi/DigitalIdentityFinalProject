@@ -48,7 +48,7 @@ Future SendTwilioMessage(String phone, String body) async {
   try {
     await twilioFlutter.sendSMS(toNumber: phone, messageBody: body);
   } catch (e) {
-    Fluttertoast.showToast(msg: "Unknown Error Occured");
+    Fluttertoast.showToast(msg: e.toString());
   }
 }
 

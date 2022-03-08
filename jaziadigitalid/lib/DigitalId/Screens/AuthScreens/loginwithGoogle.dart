@@ -9,6 +9,15 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  bool isloading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isloading = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     //test feild state
@@ -76,99 +85,9 @@ class _LoginState extends State<Login> {
                 const SizedBox(
                   height: 16,
                 ),
-                // Stack(
-                //   children: <Widget>[
-                //     Container(
-                //         width: double.infinity,
-                //         margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                //         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                //         height: 50,
-                //         decoration: BoxDecoration(
-                //             border: Border.all(color: Colors.white),
-                //             borderRadius: BorderRadius.circular(50)),
-                //         child: Row(
-                //           mainAxisAlignment: MainAxisAlignment.start,
-                //           children: <Widget>[
-                //             Container(
-                //               margin: const EdgeInsets.only(left: 20),
-                //               height: 22,
-                //               width: 22,
-                //               child: const Icon(
-                //                 Icons.email,
-                //                 color: Colors.white,
-                //                 size: 20,
-                //               ),
-                //             ),
-                //           ],
-                //         )),
-                //     Container(
-                //       height: 50,
-                //       margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                //       padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
-                //       /* child: TextField(
-                //           textAlign: TextAlign.center,
-                //           decoration: InputDecoration(
-                //               hintText: 'Email',
-                //               focusedBorder: InputBorder.none,
-                //               border: InputBorder.none,
-                //               hintStyle: TextStyle(
-                //                   color: Colors.white70
-                //               )
-                //           ),
-                //           style: TextStyle(fontSize: 16,
-                //               color: Colors.white),
-                //         )*/
-                //     ),
-                //   ],
-                // ),
                 const SizedBox(
                   height: 16,
                 ),
-                //Stack(
-                //   children: <Widget>[
-                //     Container(
-                //         width: double.infinity,
-                //         margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                //         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                //         height: 50,
-                //         decoration: BoxDecoration(
-                //             border: Border.all(color: Colors.white),
-                //             borderRadius: BorderRadius.circular(50)),
-                //         child: Row(
-                //           mainAxisAlignment: MainAxisAlignment.start,
-                //           children: <Widget>[
-                //             Container(
-                //               margin: const EdgeInsets.only(left: 20),
-                //               height: 22,
-                //               width: 22,
-                //               child: const Icon(
-                //                 Icons.vpn_key,
-                //                 color: Colors.white,
-                //                 size: 20,
-                //               ),
-                //             ),
-                //           ],
-                //         )),
-                //     Container(
-                //       height: 50,
-                //       margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
-                //       padding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
-                //       /*child: TextField(
-                //           textAlign: TextAlign.center,
-                //           decoration: InputDecoration(
-                //             hintText: 'Password',
-                //             focusedBorder: InputBorder.none,
-                //             border: InputBorder.none,
-                //             hintStyle: TextStyle(
-                //                 color: Colors.white70
-                //             ),
-                //           ),
-                //           style: TextStyle(fontSize: 16,
-                //               color: Colors.white),
-                //         )*/
-                //     ),
-                //   ],
-                // ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -185,23 +104,39 @@ class _LoginState extends State<Login> {
                             fontSize: 16,
                             color: Colors.black),
                       )*/
-                    child: TextButton.icon(
-                      onPressed: () async {
-                        /*Navigator.push(
+                    child: isloading
+                        ? CustomLoadingContainer()
+                        : TextButton.icon(
+                            onPressed: () async {
+                              setState(() {
+                                isloading = true;
+                              });
+                              /*Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => AuthService().signInWithGoogle()),
                           );*/
-                        await AuthServiceUpdated()
-                            .signInWithGoogle()
-                            .then((value) => AuthServiceUpdated().handleAuth());
-                        //AuthService().handleAuth();
-                      },
-                      label: const Text(
-                        'Google SignIn',
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-                      icon: const Icon(Icons.arrow_forward_rounded),
-                    ),
+                              try {
+                                await AuthServiceUpdated()
+                                    .signInWithGoogle()
+                                    .then((value) =>
+                                        AuthServiceUpdated().handleAuth());
+                              } catch (e) {
+                                setState(() {
+                                  isloading = false;
+                                });
+                              }
+                              setState(() {
+                                isloading = false;
+                              });
+                              //AuthService().handleAuth();
+                            },
+                            label: const Text(
+                              'Google SignIn',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                            ),
+                            icon: const Icon(Icons.arrow_forward_rounded),
+                          ),
                   ),
                 ),
                 const SizedBox(
@@ -248,5 +183,30 @@ class _LoginState extends State<Login> {
         ],
       ),
     );
+  }
+}
+
+class CustomLoadingContainer extends StatelessWidget {
+  const CustomLoadingContainer({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 70,
+        decoration: const BoxDecoration(
+          color: Colors.white54,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: const [
+            Text("Please Wait ..."),
+            CircularProgressIndicator(
+              color: Colors.black87,
+            ),
+          ],
+        ),
+      );
   }
 }

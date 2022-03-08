@@ -1,11 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/ChiefLoginDialog.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  FirebaseAuth? auth;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    auth = FirebaseAuth.instance;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +49,8 @@ class CustomDrawer extends StatelessWidget {
                                 const BoxDecoration(shape: BoxShape.circle),
                             child: ClipRRect(
                                 borderRadius: BorderRadius.circular(25),
-                                child: Image.asset("assets/icon/23.png")),
+                                child: Image.network(
+                                    auth!.currentUser!.photoURL!)),
                           ),
                         ),
                       ),
@@ -45,17 +60,22 @@ class CustomDrawer extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(left: 0.0, bottom: 8),
-                            child: Text(
-                              'name',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 18),
+                            child: Wrap(
+                              children: [
+                                Text(
+                                  auth!.currentUser!.email!,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ],
                             ),
                           ),
                           Text(
-                            'Phone',
+                            "",
+                            //  auth!.currentUser!.phoneNumber!,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 16,
@@ -87,7 +107,7 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: const Text('Name: '),
+                title: Text(auth!.currentUser!.displayName!),
                 leading: const Icon(Icons.person),
                 onTap: () {
                   // Navigator.pushNamed(context, '/sixth');

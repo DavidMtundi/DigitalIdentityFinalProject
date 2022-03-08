@@ -56,7 +56,6 @@ class FutureBuilderWidget extends StatelessWidget {
           //return MainPage();
         }
 
-        // Otherwise, show something whilst waiting for initialization to complete
         return const Center(child: CircularProgressIndicator());
       },
     );

@@ -6,6 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/DigitalId/Functions/constants.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/customDrawer.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/profilepages/profmainscreen.dart';
+import 'package:jaziadigitalid/DigitalId/Widgets/showdialog.dart';
+import 'package:lottie/lottie.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -20,9 +23,10 @@ class DIRegister extends StatefulWidget {
   State<DIRegister> createState() => _DIRegisterState();
 }
 
-class _DIRegisterState extends State<DIRegister> {
+class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   int _activeStepIndex = 0;
   bool isloading = false;
+  bool progressloading = false;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
@@ -53,18 +57,44 @@ class _DIRegisterState extends State<DIRegister> {
   String selectedVouchertype = "";
   TextEditingController voucheruniqueid = TextEditingController();
   TextEditingController voucherpassword = TextEditingController();
+  late AnimationController _lottieAnimationController;
 
-  String _selectedDate = '';
-  String _dateCount = '';
-  String _range = '';
-  String _rangeCount = '';
   List<ImageObject> _imgObjs = [];
-
-  String _selectedMarital = "Marital Status";
 
   String _selectedVoucher = "Voucher Type";
 
   final TextEditingController _textFieldController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isloading = false;
+    _lottieAnimationController = AnimationController(vsync: this);
+  }
+
+  void ShowCustomAlertDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Column(
+              children: [
+                Container(
+                  height: 60,
+                  width: 50,
+                  child: Lottie.asset('assets/icon/animate.json',
+                      controller: _lottieAnimationController,
+                      height: 36.0, onLoaded: (composition) {
+                    _lottieAnimationController..duration = composition.duration;
+                  }),
+                ),
+                Text("Checking Details......")
+              ],
+            ),
+          );
+        });
+  }
 
   /// The method for [DateRangePickerSelectionChanged] callback, which will be
   /// called whenever a selection changed on the date picker widget.
@@ -75,28 +105,21 @@ class _DIRegisterState extends State<DIRegister> {
       });
       setState(() {
         if (args.value is PickerDateRange) {
-          _range = '${DateFormat('dd/MM/yyyy').format(args.value.startDate)} -'
-              // ignore: lines_longer_than_80_chars
-              ' ${DateFormat('dd/MM/yyyy').format(args.value.endDate ?? args.value.startDate)}';
         } else if (args.value is DateTime) {
-          _selectedDate = args.value.toString();
           setState(() {
             dob = DateTime.parse(args.value.toString());
           });
         } else if (args.value is List<DateTime>) {
-          _dateCount = args.value.length.toString();
-        } else {
-          _rangeCount = args.value.length.toString();
-        }
+        } else {}
       });
     }
   }
 
   List<Step> stepList() => [
         Step(
-          state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
+          state: _activeStepIndex <= 0 ? StepState.editing : StepState.indexed,
           isActive: _activeStepIndex >= 0,
-          title: const Text('Personal Details'),
+          title: const Text('Personal Information'),
           content: Form(
             key: _formKeys[0],
             child: Column(
@@ -218,7 +241,7 @@ class _DIRegisterState extends State<DIRegister> {
           ),
         ),
         Step(
-          state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
+          state: _activeStepIndex <= 1 ? StepState.editing : StepState.indexed,
           isActive: _activeStepIndex >= 0,
           title: const Text('Parental Details'),
           content: Form(
@@ -257,9 +280,9 @@ class _DIRegisterState extends State<DIRegister> {
         ),
         Step(
             state:
-                _activeStepIndex <= 1 ? StepState.editing : StepState.complete,
+                _activeStepIndex <= 2 ? StepState.editing : StepState.indexed,
             isActive: _activeStepIndex >= 1,
-            title: const Text('Location Address'),
+            title: const Text('Location'),
             content: Form(
               key: _formKeys[2],
               child: Container(
@@ -289,9 +312,9 @@ class _DIRegisterState extends State<DIRegister> {
               ),
             )),
         Step(
-          state: _activeStepIndex <= 0 ? StepState.editing : StepState.complete,
+          state: _activeStepIndex <= 3 ? StepState.editing : StepState.indexed,
           isActive: _activeStepIndex >= 0,
-          title: const Text('Voucher Details'),
+          title: const Text('Voucher'),
           content: Form(
             key: _formKeys[3],
             child: Container(
@@ -322,6 +345,7 @@ class _DIRegisterState extends State<DIRegister> {
                   ),
                   EditText(
                       title: "Voucher Password",
+                      isPassword: true,
                       textEditingController: voucherpassword),
                 ],
               ),
@@ -369,16 +393,26 @@ class _DIRegisterState extends State<DIRegister> {
             steps: stepList(),
             onStepContinue: () async {
               if (_activeStepIndex < (stepList().length - 1)) {
-                if (_formKeys[_activeStepIndex].currentState!.validate()) {
-                  setState(() {
-                    _activeStepIndex += 1;
-                  });
+                //else {
+                if (_imgObjs.isNotEmpty) {
+                  if (_formKeys[_activeStepIndex].currentState!.validate()) {
+                    setState(() {
+                      _activeStepIndex += 1;
+                    });
+                  }
+                } else {
+                  Fluttertoast.showToast(
+                      msg:
+                          "Please Select an Image in Personal Information Tab");
                 }
+                // }
               } else {
                 setState(() {
                   isloading = true;
                 });
-
+                if (isloading) {
+                  //    ShowCustomAlertDialog(context);
+                }
                 bool isvalid = _formKeys[0].currentState!.validate() &&
                     _formKeys[1].currentState!.validate() &&
                     _formKeys[2].currentState!.validate() &&
@@ -451,18 +485,26 @@ class _DIRegisterState extends State<DIRegister> {
               decoration: const InputDecoration(hintText: "verify code"),
             ),
             actions: [
-              isloading
+              progressloading
                   ? const CircularProgressIndicator()
                   : TextButton(
                       onPressed: () async {
+                        setState(() {
+                          progressloading = true;
+                        });
                         if (validatecode(_textFieldController.value.text
                             .trim()
                             .toString())) {
-                          await saveDetails()
-                              .then((value) => Navigator.pop(context));
+                          await saveDetails();
+                          setState(() {
+                            progressloading = false;
+                          });
+                          Route route = MaterialPageRoute(
+                              builder: ((context) => ProfilePage()));
+                          Navigator.pushReplacement(context, route);
+                        } else {
+                          Fluttertoast.showToast(msg: "Incorrect Code Inputed");
                         }
-
-                        Fluttertoast.showToast(msg: "Incorrect Code Inputed");
                       },
                       child: const Text("Validate ")),
             ],

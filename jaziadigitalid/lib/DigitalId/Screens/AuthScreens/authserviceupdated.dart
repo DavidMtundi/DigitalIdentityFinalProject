@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authservice.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/ChiefScreen/MainScreenChief.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/profilepages/profmainscreen.dart';
 
 class AuthServiceUpdated {
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -37,7 +39,18 @@ class AuthServiceUpdated {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            return DIRegister();
+            return StreamBuilder<Object>(
+                stream: firestore
+                    .collectionGroup("Vouched")
+                    .where("uid", isEqualTo: auth.currentUser!.uid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return ProfilePage();
+                  } else {
+                    return DIRegister();
+                  }
+                });
           } else {
             return Login();
             //print('Nothing');
