@@ -9,7 +9,6 @@ import 'package:jaziadigitalid/DigitalId/Screens/customDrawer.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/profilepages/profmainscreen.dart';
 import 'package:jaziadigitalid/DigitalId/Widgets/showdialog.dart';
 import 'package:lottie/lottie.dart';
-
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -17,7 +16,11 @@ import '../Functions/firebasefunc.dart';
 import '../Widgets/InputField.dart';
 
 class DIRegister extends StatefulWidget {
-  DIRegister({Key? key}) : super(key: key);
+  bool isenabled;
+  DIRegister({
+    Key? key,
+    required this.isenabled,
+  }) : super(key: key);
 
   @override
   State<DIRegister> createState() => _DIRegisterState();
@@ -374,17 +377,17 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.black45,
-          title: const Text(
-            ' Digital Identity Registration Form',
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
+        appBar: widget.isenabled
+            ? AppBar(
+                backgroundColor: Colors.black45,
+                title: const Text(
+                  ' Digital Identity Registration Form',
+                  style: TextStyle(fontSize: 16),
+                ),
+              )
+            : null,
         backgroundColor: Colors.white,
-        drawer: const SafeArea(
-          child: CustomDrawer(),
-        ),
+        drawer: widget.isenabled ? CustomDrawer() : null,
         body: Padding(
           padding: const EdgeInsets.only(left: 14.0),
           child: Stepper(
@@ -489,12 +492,11 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
                   ? const CircularProgressIndicator()
                   : TextButton(
                       onPressed: () async {
-                       
                         if (validatecode(_textFieldController.value.text
                             .trim()
                             .toString())) {
                           await saveDetails();
-                          
+
                           Navigator.of(context).pop();
                           Route route = MaterialPageRoute(
                               builder: ((context) => ProfilePage()));

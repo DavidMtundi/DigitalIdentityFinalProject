@@ -114,7 +114,7 @@ class ChiefDrawer extends StatelessWidget {
                         onTap: () async {
                           await AuthServiceUpdated().signOut();
                           Route route = MaterialPageRoute(
-                              builder: (context) => DIRegister());
+                              builder: (context) => DIRegister(isenabled: true,));
                           Navigator.pushReplacement(context, route);
                         },
                         leading: const Icon(Icons.link_off),

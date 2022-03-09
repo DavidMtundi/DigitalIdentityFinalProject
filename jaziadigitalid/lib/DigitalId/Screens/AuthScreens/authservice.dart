@@ -17,7 +17,9 @@ class AuthService {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            return DIRegister();
+            return DIRegister(
+              isenabled: true,
+            );
           } else {
             return Login();
             //print('Nothing');

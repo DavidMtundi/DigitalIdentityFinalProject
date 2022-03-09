@@ -39,20 +39,38 @@ class AuthServiceUpdated {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
-            return StreamBuilder<Object>(
-                stream: firestore
-                    .collection("DigitalIdentity")
-                    .doc("ChiefId")
-                    .collection("Vouched")
-                    .where("uid", isEqualTo: auth.currentUser!.uid)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ProfilePage();
-                  } else {
-                    return DIRegister();
-                  }
-                });
+            try {
+              return StreamBuilder<Object>(
+                  stream: firestore
+                      .collection("DigitalIdentity")
+                      .doc("ChiefId")
+                      .collection("Vouched")
+                      .where("uid", isEqualTo: auth.currentUser!.uid)
+                      .snapshots(),
+                  builder: (context, snapshot2) {
+                    if (snapshot2.hasData) {
+                      try {
+                        return ProfilePage();
+                      } catch (E) {
+                        return DIRegister(
+                          isenabled: true,
+                        );
+                      }
+                    } else if (snapshot2.hasError) {
+                      return DIRegister(
+                        isenabled: true,
+                      );
+                    } else {
+                      return DIRegister(
+                        isenabled: true,
+                      );
+                    }
+                  });
+            } catch (e) {
+              return DIRegister(
+                isenabled: true,
+              );
+            }
           } else {
             return Login();
             //print('Nothing');
