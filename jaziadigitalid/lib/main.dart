@@ -6,10 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
-import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
-import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
-import 'package:jaziadigitalid/mt940/updatedscreens/MainPage.dart';
-import 'package:jaziadigitalid/mt940/updatedscreens/UploadPage.dart';
 
 const debug = true;
 

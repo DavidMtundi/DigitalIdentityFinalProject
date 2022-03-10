@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/ChiefLoginDialog.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({
@@ -62,18 +63,19 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsets.only(left: 0.0, bottom: 8),
+                            padding:
+                                const EdgeInsets.only(left: 0.0, bottom: 8),
                             child: Wrap(
                               children: [
                                 Text(
                                   auth!.currentUser!.email!,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 18),
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                               ],
                             ),
                           ),
-                          Text(
+                          const Text(
                             "",
                             //  auth!.currentUser!.phoneNumber!,
                             overflow: TextOverflow.ellipsis,
@@ -152,6 +154,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
                         title: const Text('SignOut'),
                         onTap: () async {
                           await AuthServiceUpdated().signOut();
+                          Route route =
+                              MaterialPageRoute(builder: (context) => Login());
+                          Navigator.pushReplacement(context, route);
                         },
                         leading: const Icon(Icons.link_off),
                         enableFeedback: true,

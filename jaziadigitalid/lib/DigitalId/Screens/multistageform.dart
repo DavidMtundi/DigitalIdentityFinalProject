@@ -4,7 +4,9 @@ import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:jaziadigitalid/DigitalId/Components/AsyncProgressDialog.dart';
 import 'package:jaziadigitalid/DigitalId/Functions/constants.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authservice.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/customDrawer.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/profilepages/profmainscreen.dart';
 import 'package:jaziadigitalid/DigitalId/Widgets/showdialog.dart';
@@ -37,6 +39,30 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
     GlobalKey<FormState>(),
     GlobalKey<FormState>()
   ];
+  @override
+  void initState() {
+    super.initState();
+    checkdb();
+    isloading = false;
+    _lottieAnimationController = AnimationController(vsync: this);
+  }
+
+  bool exists = false;
+
+  Future<bool> checkdb() async {
+    var valuegiven = firestore
+        .collection("DigitalIdentity")
+        .doc("ChiefId")
+        .collection("Vouched")
+        .where("uid", isEqualTo: auth.currentUser!.uid)
+        .get()
+        .then((value) {
+      setState(() {
+        exists = value.docs.first.exists;
+      });
+    });
+    return exists;
+  }
 
 //person's details
   TextEditingController firstname = TextEditingController();
@@ -68,14 +94,6 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
 
   final TextEditingController _textFieldController = TextEditingController();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    isloading = false;
-    _lottieAnimationController = AnimationController(vsync: this);
-  }
-
   void ShowCustomAlertDialog(BuildContext context) {
     showDialog(
         context: context,
@@ -92,7 +110,7 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
                     _lottieAnimationController..duration = composition.duration;
                   }),
                 ),
-                Text("Checking Details......")
+                const Text("Checking Details......")
               ],
             ),
           );
@@ -375,138 +393,236 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: widget.isenabled
-            ? AppBar(
-                backgroundColor: Colors.black45,
-                title: const Text(
-                  ' Digital Identity Registration Form',
-                  style: TextStyle(fontSize: 16),
-                ),
-              )
-            : null,
-        backgroundColor: Colors.white,
-        drawer: widget.isenabled ? CustomDrawer() : null,
-        body: Padding(
-          padding: const EdgeInsets.only(left: 14.0),
-          child: Stepper(
-            type: StepperType.vertical,
-            currentStep: _activeStepIndex,
-            steps: stepList(),
-            onStepContinue: () async {
-              if (_activeStepIndex < (stepList().length - 1)) {
-                //else {
-                if (_imgObjs.isNotEmpty) {
-                  if (_formKeys[_activeStepIndex].currentState!.validate()) {
+    return exists
+        ? const ProfilePage()
+        : Scaffold(
+            appBar: widget.isenabled
+                ? AppBar(
+                    backgroundColor: Colors.black45,
+                    title: const Text(
+                      ' Digital Identity Registration Form',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                : null,
+            backgroundColor: Colors.white,
+            drawer: widget.isenabled ? const CustomDrawer() : null,
+            body: Padding(
+              padding: const EdgeInsets.only(left: 14.0),
+              child: Stepper(
+                type: StepperType.vertical,
+                currentStep: _activeStepIndex,
+                steps: stepList(),
+                onStepContinue: () async {
+                  if (_activeStepIndex < (stepList().length - 1)) {
+                    //else {
+                    if (_imgObjs.isNotEmpty) {
+                      if (_formKeys[_activeStepIndex]
+                          .currentState!
+                          .validate()) {
+                        setState(() {
+                          _activeStepIndex += 1;
+                        });
+                      }
+                    } else {
+                      Fluttertoast.showToast(
+                          msg:
+                              "Please Select an Image in Personal Information Tab");
+                    }
+                    // }
+                  } else {
+                    bool isvalid = _formKeys[0].currentState!.validate() &&
+                        _formKeys[1].currentState!.validate() &&
+                        _formKeys[2].currentState!.validate() &&
+                        _formKeys[3].currentState!.validate();
+
+                    if (isvalid) {
+                      // setState(() {
+                      //   isloading = true;
+                      // });
+                      //   final future = await performOperations().th;
+                      //   await showDialog(
+                      //     context: context,
+                      //     builder: (context) {
+                      //       return AsyncProgressDialog(
+                      //         future,
+                      //         onError: () {},
+                      //         message: Text("Please Wait"),
+                      //       );
+                      //     },
+                      //   );
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Center(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: Center(
+                                  child: Container(
+                                    height: 200,
+                                    width: 200,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white60),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                        CircularProgressIndicator(
+                                          color: Colors.lightBlue,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              top: 20, bottom: 8.0),
+                                          child: Text(
+                                            "Please Wait ...",
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          });
+                      await performOperations();
+
+                      ///await _displayTextInputDialog(context);
+                      // setState(() {
+                      //   isloading = false;
+                      // });
+                    } else {
+                      print("cannot do so");
+                    }
+
                     setState(() {
-                      _activeStepIndex += 1;
+                      isloading = false;
                     });
                   }
-                } else {
-                  Fluttertoast.showToast(
-                      msg:
-                          "Please Select an Image in Personal Information Tab");
-                }
-                // }
-              } else {
-                setState(() {
-                  isloading = true;
-                });
-                if (isloading) {
-                  //    ShowCustomAlertDialog(context);
-                }
-                bool isvalid = _formKeys[0].currentState!.validate() &&
-                    _formKeys[1].currentState!.validate() &&
-                    _formKeys[2].currentState!.validate() &&
-                    _formKeys[3].currentState!.validate();
-                if (isvalid) {
-                  await performOperations();
-                  setState(() {});
-                  await _displayTextInputDialog(context);
+                },
+                onStepCancel: () {
+                  if (_activeStepIndex == 0) {
+                    return;
+                  }
                   setState(() {
-                    isloading = false;
+                    _activeStepIndex -= 1;
                   });
-                } else {
-                  print("cannot do so");
-                }
-
-                setState(() {
-                  isloading = false;
-                });
-              }
-            },
-            onStepCancel: () {
-              if (_activeStepIndex == 0) {
-                return;
-              }
-              setState(() {
-                _activeStepIndex -= 1;
-              });
-            },
-            // onStepTapped: (int index) {
-            //   setState(() {
-            //     _activeStepIndex = index;
-            //   });
-            // },
-          ),
-        ),
-      ),
-    );
+                },
+              ),
+            ),
+          );
   }
 
+  bool saving = false;
   Future saveDetails() async {
+    Navigator.of(context).pop();
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: Material(
+              color: Colors.transparent,
+              child: Center(
+                child: Container(
+                  height: 200,
+                  width: 300,
+                  decoration: const BoxDecoration(color: Colors.white60),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(
+                        color: Colors.lightBlue,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 20, bottom: 8.0),
+                        child: Text(
+                          "Generating Digital Id  Please Wait ...",
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+
     List<String> allpics = await FirebaseFunc().uploadAllImages(_imgObjs);
-    for (var item in allpics) {
-      print("The urls is " + item.toString());
-    }
-    await FirebaseFunc().savePersonDetails(
-        firstname.text.toString(),
-        lastname.value.text.trim(),
-        work.value.text.trim(),
-        dob,
-        fathername.value.text.trim(),
-        mothername.value.text.trim(),
-        grandfathername.value.text.trim(),
-        grandmothername.value.text.trim(),
-        location.value.text.trim(),
-        sublocation.value.text.trim(),
-        village.value.text.trim(),
-        _selectedVoucher,
-        voucheruniqueid.value.text.trim(),
-        allpics);
+
+    await FirebaseFunc()
+        .savePersonDetails(
+            firstname.text.toString(),
+            lastname.value.text.trim(),
+            work.value.text.trim(),
+            dob,
+            fathername.value.text.trim(),
+            mothername.value.text.trim(),
+            grandfathername.value.text.trim(),
+            grandmothername.value.text.trim(),
+            location.value.text.trim(),
+            sublocation.value.text.trim(),
+            village.value.text.trim(),
+            _selectedVoucher,
+            voucheruniqueid.value.text.trim(),
+            allpics)
+        .then((value) {
+      Route route =
+          MaterialPageRoute(builder: ((context) => const ProfilePage()));
+      Navigator.pushReplacement(context, route);
+    });
   }
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
     return showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (context) {
           return AlertDialog(
             title: const Text('Verify the Input Code'),
-            content: TextField(
-              controller: _textFieldController,
-              decoration: const InputDecoration(hintText: "verify code"),
+            content: Container(
+              height: 200,
+              child: Column(
+                children: [
+                  Wrap(children: [
+                    Text(
+                        "Sms Code has been sent to Voucher with ID: ${voucheruniqueid.value.text.toString()}")
+                  ]),
+                  SizedBox(height: 30),
+                  TextField(
+                    controller: _textFieldController,
+                    decoration: const InputDecoration(hintText: "verify code"),
+                  ),
+                ],
+              ),
             ),
-            actions: [
-              progressloading
-                  ? const CircularProgressIndicator()
-                  : TextButton(
-                      onPressed: () async {
-                        if (validatecode(_textFieldController.value.text
-                            .trim()
-                            .toString())) {
-                          await saveDetails();
+            actions: saving
+                ? [
+                    const Center(
+                        child: CircularProgressIndicator(
+                      strokeWidth: 10,
+                    ))
+                  ]
+                : [
+                    TextButton(
+                        onPressed: () async {
+                          if (validatecode(_textFieldController.value.text
+                              .trim()
+                              .toString())) {
+                            await saveDetails();
 
-                          Navigator.of(context).pop();
-                          Route route = MaterialPageRoute(
-                              builder: ((context) => ProfilePage()));
-                          Navigator.pushReplacement(context, route);
-                        } else {
-                          Fluttertoast.showToast(msg: "Incorrect Code Inputed");
-                        }
-                      },
-                      child: const Text("Validate ")),
-            ],
+                            //  Navigator.of(context).pop();
+
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Incorrect Code Inputed");
+                          }
+                        },
+                        child: const Text("Validate ")),
+                  ],
           );
         });
   }
@@ -514,13 +630,9 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   ///Load the ima
   performOperations() async {
     randomNumber = getRandomNumber();
-
-    ///get the randomnumber and send it to the chief
     await SendTwilioMessage("+254740204736",
-        "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}");
-    // setState(() {
-    //   isloading = false;
-    // });
-    //display a popup box
+            "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}")
+        .then((value) => Navigator.of(context).pop())
+        .then((value) => _displayTextInputDialog(context));
   }
 }

@@ -111,10 +111,7 @@ class _LoginState extends State<Login> {
                               setState(() {
                                 isloading = true;
                               });
-                              /*Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => AuthService().signInWithGoogle()),
-                          );*/
+
                               try {
                                 await AuthServiceUpdated()
                                     .signInWithGoogle()

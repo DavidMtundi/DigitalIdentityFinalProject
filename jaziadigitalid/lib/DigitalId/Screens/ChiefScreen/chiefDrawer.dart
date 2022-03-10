@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/ChiefLoginDialog.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
 
 class ChiefDrawer extends StatelessWidget {
@@ -113,8 +114,8 @@ class ChiefDrawer extends StatelessWidget {
                         title: const Text('SignOut'),
                         onTap: () async {
                           await AuthServiceUpdated().signOut();
-                          Route route = MaterialPageRoute(
-                              builder: (context) => DIRegister(isenabled: true,));
+                          Route route =
+                              MaterialPageRoute(builder: (context) => Login());
                           Navigator.pushReplacement(context, route);
                         },
                         leading: const Icon(Icons.link_off),

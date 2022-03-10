@@ -18,80 +18,105 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   FirebaseAuth auth = FirebaseAuth.instance;
+  String appbarname = "Profile Page";
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     auth = FirebaseAuth.instance;
+
+    checkdb();
+  }
+
+  bool exists = false;
+
+  Future<bool> checkdb() async {
+    var valuegiven = firestore
+        .collection("DigitalIdentity")
+        .doc("ChiefId")
+        .collection("Vouched")
+        .where("uid", isEqualTo: auth.currentUser!.uid)
+        .get()
+        .then((value) {
+      setState(() {
+        exists = value.docs.first.exists;
+      });
+    });
+    return exists;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: buildAppBar(context),
-        drawer: CustomDrawer(),
-        body: SafeArea(
-          child: StreamBuilder<QuerySnapshot>(
-              stream: firestore
-                  .collection("DigitalIdentity")
-                  .doc("ChiefId")
-                  .collection("Vouched")
-                  .where("uid", isEqualTo: auth.currentUser!.uid)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                try {
-                  return snapshot.hasData
-                      ? ListView(
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            ProfileWidget(
-                              imagePath: snapshot.data!.docs.first['personpics']
-                                  [0],
-                              onClicked: () async {},
-                            ),
-                            const SizedBox(height: 24),
-                            buildid(
-                                snapshot.data!.docs.first['DigitalIdentity']),
-                            const SizedBox(
-                              height: 24,
-                            ),
-                            //build individual details
-                            buildHeaderName("First Name", "Second Name"),
-                            buildNameDetails(snapshot.data!.docs.first['fname'],
-                                snapshot.data!.docs.first['lname']),
-                            const SizedBox(height: 24),
+    return !exists
+        ? DIRegister(isenabled: true)
+        : Scaffold(
+            appBar: buildAppBar(context, appbarname),
+            drawer: CustomDrawer(),
+            body: SafeArea(
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: firestore
+                      .collection("DigitalIdentity")
+                      .doc("ChiefId")
+                      .collection("Vouched")
+                      .where("uid", isEqualTo: auth.currentUser!.uid)
+                      .snapshots(),
+                  builder: (context, snapshotvalue) {
+                    try {
+                      return snapshotvalue.hasData
+                          ? ListView(
+                              physics: const BouncingScrollPhysics(),
+                              children: [
+                                ProfileWidget(
+                                  imagePath: snapshotvalue
+                                      .data!.docs.first['personpics'][0],
+                                  onClicked: () async {},
+                                ),
+                                const SizedBox(height: 24),
+                                buildid(snapshotvalue
+                                    .data!.docs.first['DigitalIdentity']),
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                                //build individual details
+                                buildHeaderName("First Name", "Second Name"),
+                                buildNameDetails(
+                                    snapshotvalue.data!.docs.first['fname'],
+                                    snapshotvalue.data!.docs.first['lname']),
+                                const SizedBox(height: 24),
 
-                            //build parentdetails
-                            buildHeaderName("Father", "Mother Name"),
-                            buildNameDetails(
-                                snapshot.data!.docs.first['fathername'],
-                                snapshot.data!.docs.first['mothername']),
-                            const SizedBox(height: 24),
+                                //build parentdetails
+                                buildHeaderName("Father", "Mother Name"),
+                                buildNameDetails(
+                                    snapshotvalue
+                                        .data!.docs.first['fathername'],
+                                    snapshotvalue
+                                        .data!.docs.first['mothername']),
+                                const SizedBox(height: 24),
 
-                            //build parentdetails
-                            buildHeaderName("Location", "Village"),
-                            buildNameDetails(
-                                snapshot.data!.docs.first['location'],
-                                snapshot.data!.docs.first['village']),
-                            const SizedBox(height: 24),
+                                //build parentdetails
+                                buildHeaderName("Location", "Village"),
+                                buildNameDetails(
+                                    snapshotvalue.data!.docs.first['location'],
+                                    snapshotvalue.data!.docs.first['village']),
+                                const SizedBox(height: 24),
 
-                            //buildHeaderName(),
-                            const SizedBox(height: 24),
-                            //Center(child: buildUpgradeButton()),
-                            const SizedBox(height: 24),
-                            // NumbersWidget(),
-                            const SizedBox(height: 48),
-                            //buildAbout(user),
-                          ],
-                        )
-                      : CircularProgressIndicator();
-                } catch (e) {
-                  return DIRegister(
-                    isenabled: false,
-                  );
-                }
-              }),
-        ));
+                                //buildHeaderName(),
+                                const SizedBox(height: 24),
+                                //Center(child: buildUpgradeButton()),
+                                const SizedBox(height: 24),
+                                // NumbersWidget(),
+                                const SizedBox(height: 48),
+                                //buildAbout(user),
+                              ],
+                            )
+                          : CircularProgressIndicator();
+                    } catch (e) {
+                      return DIRegister(
+                        isenabled: false,
+                      );
+                    }
+                  }),
+            ));
   }
 
   Widget buildHeaderName(String firstheader, String secondHeader) => Row(
