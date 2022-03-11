@@ -15,6 +15,7 @@ class _MainScreenChiefState extends State<MainScreenChief> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black45,
+        title: Text("Chief Main Page"),
       ),
       drawer: const ChiefDrawer(),
       body: Container(

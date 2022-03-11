@@ -24,7 +24,7 @@ class _GridWidgetState extends State<GridWidget> {
     return StreamBuilder<QuerySnapshot>(
         stream: firestore
             .collection('DigitalIdentity')
-            .doc(chiefUserId)
+            .doc("ChiefId")
             .collection("Vouched")
             .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) =>

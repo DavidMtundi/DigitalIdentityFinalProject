@@ -1,13 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authservice.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authserviceupdated.dart';
-import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/ChiefLoginDialog.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/loginwithGoogle.dart';
-import 'package:jaziadigitalid/DigitalId/Screens/multistageform.dart';
 
-class ChiefDrawer extends StatelessWidget {
+class ChiefDrawer extends StatefulWidget {
   const ChiefDrawer({
     Key? key,
   }) : super(key: key);
+
+  @override
+  State<ChiefDrawer> createState() => _ChiefDrawerState();
+}
+
+class _ChiefDrawerState extends State<ChiefDrawer> {
+  int totalCount = 0;
+  String chiefname = "", phoneNumber = "0";
+  @override
+  void initState() {
+    super.initState();
+    findCountPersonRegistered();
+  }
+
+  int count = 0;
+  Future findCountPersonRegistered() async {
+    await firestore
+        .collection('DigitalIdentity')
+        .doc("ChiefId")
+        .collection("Vouched")
+        .get()
+        .then((value) {
+      setState(() {
+        count = value.docs.length;
+      });
+    });
+    // .snapshots()
+    // .length;
+
+    await firestore
+        .collection('DigitalIdentity')
+        .doc("ChiefId")
+        .get()
+        .then((value) {
+      setState(() {
+        chiefname = value["name"];
+        phoneNumber = value["phone"];
+      });
+    });
+
+    setState(() {
+      totalCount = count;
+    });
+
+    //return count;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,21 +92,34 @@ class ChiefDrawer extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(left: 0.0, bottom: 8),
                             child: Text(
-                              'name',
+                              chiefname,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontSize: 18),
                             ),
                           ),
                           Text(
-                            'Phone',
+                            phoneNumber,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 16,
                             ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Total Vouchees Registered",
+                                style: TextStyle(fontSize: 15),
+                              ),
+                              Text(
+                                count.toString(),
+                                style: TextStyle(fontSize: 17),
+                              )
+                            ],
                           )
                         ],
                       ),
@@ -89,7 +147,26 @@ class ChiefDrawer extends StatelessWidget {
                 ),
               ),
               ListTile(
-                title: const Text('Name: '),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [Text('Name: '), Text(chiefname)],
+                ),
+                leading: const Icon(Icons.person),
+                onTap: () {
+                  // Navigator.pushNamed(context, '/sixth');
+                },
+                trailing: const Icon(Icons.edit),
+              ),
+              ListTile(
+                title: const Text('Status:      Chief '),
+                leading: const Icon(Icons.person),
+                onTap: () {
+                  // Navigator.pushNamed(context, '/sixth');
+                },
+                trailing: const Icon(Icons.edit),
+              ),
+              ListTile(
+                title: const Text('Location: '),
                 leading: const Icon(Icons.person),
                 onTap: () {
                   // Navigator.pushNamed(context, '/sixth');
