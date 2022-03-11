@@ -3,13 +3,10 @@ import 'dart:io';
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
-import 'package:jaziadigitalid/DigitalId/Components/AsyncProgressDialog.dart';
 import 'package:jaziadigitalid/DigitalId/Functions/constants.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authservice.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/customDrawer.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/profilepages/profmainscreen.dart';
-import 'package:jaziadigitalid/DigitalId/Widgets/showdialog.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -515,6 +512,10 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
           );
   }
 
+  Future getChiefId() async {
+    var value = firestore.collection("Chief").doc().snapshots();
+  }
+
   bool saving = false;
   Future saveDetails() async {
     Navigator.of(context).pop();
@@ -629,6 +630,7 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
 
   ///Load the ima
   performOperations() async {
+    ///get all number of the person using twilio
     randomNumber = getRandomNumber();
     await SendTwilioMessage("+254740204736",
             "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}")
