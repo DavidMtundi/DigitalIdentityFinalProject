@@ -29,7 +29,7 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   int _activeStepIndex = 0;
   bool isloading = false;
   bool progressloading = false;
-
+  List<String> phoneNumbers = [];
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
@@ -39,9 +39,24 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    getPhoneNumbers();
+
     checkdb();
     isloading = false;
     _lottieAnimationController = AnimationController(vsync: this);
+  }
+
+  Future getPhoneNumbers() async {
+    await firestore.collection('chief').doc("DID123456").get().then((value) {
+      setState(() {
+        // chiefname = value["name"];
+        //phone = value["phoneNumbers"][0];
+        phoneNumbers = List.from(value['phoneNumbers']);
+        // value["phoneNumbers"];
+      });
+    });
+    //  print("phhone numbers are::");
+    //print(phoneNumbers.length);
   }
 
   bool exists = false;
@@ -632,9 +647,14 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   performOperations() async {
     ///get all number of the person using twilio
     randomNumber = getRandomNumber();
-    await SendTwilioMessage("+254740204736",
-            "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}")
-        .then((value) => Navigator.of(context).pop())
-        .then((value) => _displayTextInputDialog(context));
+
+    for (int i = 0; i < phoneNumbers.length; i++) {
+      print(phoneNumbers[i]);
+      await SendTwilioMessage(phoneNumbers[i].toString(),
+          "Please Confirm that you're the one registering this person named ${firstname.value.text.trim()}  ${lastname.value.text.trim()}   \n Fathers Name : ${fathername.value.text.trim()} \n Mother name ${mothername.value.text.trim()} \n GrandFather Name : ${grandfathername.value.text.trim()} \n GrandMother name : ${grandmothername.value.text.trim()} \n Location : ${location.value.text.trim()} \n Sublocation : ${sublocation.value.text.trim()} \nVillage Name : ${village.value.text.trim()} \n Validation Code ${randomNumber.toString()}");
+    }
+
+    Navigator.of(context).pop();
+    _displayTextInputDialog(context);
   }
 }
