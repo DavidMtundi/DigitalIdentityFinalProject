@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String chiefUserId = "ChiefId";
+late SharedPreferences preferences;
 
 class FirebaseFunc {
   List<String> downloadedUrls = [];
@@ -51,6 +53,51 @@ class FirebaseFunc {
         "DigitalIdentity": uniqueid,
         "personpics": FieldValue.arrayUnion(personpicsurls),
       });
+    } catch (ex) {
+      // setState(() {
+      //   isloading = false;
+      // });
+    }
+  }
+
+  Future<void> cachePersonDetail(
+    String fname,
+    String lname,
+    String work,
+    DateTime dob,
+    String fathername,
+    String mothername,
+    String grandfathername,
+    String grandmothername,
+    String location,
+    String sublocation,
+    String village,
+    String vouchertype,
+    String voucherid,
+    //List<String> personpicsurls
+  ) async {
+    try {
+      preferences = await SharedPreferences.getInstance();
+      preferences.setBool("waiting", true);
+      //   preferences.setString(jsonEncode("object"));
+
+      preferences.setString("uid", _auth.currentUser!.uid);
+      preferences.setString("fname", fname);
+      preferences.setString("lname", lname);
+      preferences.setString("work", work);
+      preferences.setString("dob", dob.toString());
+      preferences.setString("fathername", fathername);
+      preferences.setString("mothername", mothername);
+      preferences.setString("grandfathername", grandfathername);
+      preferences.setString("grandmothername", grandmothername);
+      preferences.setString("location", location);
+      preferences.setString("sublocation", sublocation);
+      preferences.setString("village", village);
+      preferences.setString("vouchertype", vouchertype);
+      preferences.setString("voucherid", voucherid);
+      preferences.setString("DigitalIdentity", uniqueid
+          // preferences.setStringList( "personpics", );
+          );
     } catch (ex) {
       // setState(() {
       //   isloading = false;

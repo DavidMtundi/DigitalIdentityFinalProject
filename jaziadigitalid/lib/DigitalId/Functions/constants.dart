@@ -3,9 +3,13 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:twilio_flutter/twilio_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class DigitalId {
   static const String appName = "e_id";
@@ -29,9 +33,10 @@ class DigitalId {
   static const String addressId = "addressId";
 
   static String currentuserPhotUrl = "";
-  static String twilioSID = "AC8d9f21adca071eb70d092b5c7292fff2";
-  static String twilioPhoneNumber = "+17152882261";
-  static String twilioauthtoken = "2db70fff9b7d6256da3068f191260fe1";
+
+  static String twilioSID = "AC7048c718d058d37b94db87b2373701f6";
+  static String twilioPhoneNumber = "+16292342795";
+  static String twilioauthtoken = "a8ea642208350b8738e71f6dc0db4df8";
 }
 
 int randomNumber = 0;
@@ -80,4 +85,19 @@ String? geterror(String? controller) {
   }
 
   return null;
+}
+
+class Utils {
+  static void ShowSnackBar(BuildContext context, String message, Color color) =>
+      showSimpleNotification(
+          const Text(
+            "Internet Connection Update",
+            style: TextStyle(fontSize: 13),
+          ),
+          duration: const Duration(seconds: 10),
+          subtitle: Text(
+            message,
+            style: const TextStyle(fontSize: 11),
+          ),
+          background: color);
 }

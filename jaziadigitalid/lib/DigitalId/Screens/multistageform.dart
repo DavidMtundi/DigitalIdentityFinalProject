@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:advance_image_picker/advance_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:jaziadigitalid/DigitalId/Functions/constants.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/AuthScreens/authservice.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/customDrawer.dart';
 import 'package:jaziadigitalid/DigitalId/Screens/profilepages/profmainscreen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../Functions/firebasefunc.dart';
@@ -28,6 +30,7 @@ class DIRegister extends StatefulWidget {
 class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   int _activeStepIndex = 0;
   bool isloading = false;
+
   bool progressloading = false;
   List<String> phoneNumbers = [];
   final List<GlobalKey<FormState>> _formKeys = [
@@ -40,10 +43,49 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     getPhoneNumbers();
-
+    checkState();
     checkdb();
     isloading = false;
     _lottieAnimationController = AnimationController(vsync: this);
+  }
+
+  Future<bool> checkState() async {
+    bool waiting = false;
+    preferences = await SharedPreferences.getInstance();
+    try {
+      waiting = preferences.getBool("waiting")!;
+    } catch (e) {
+      waiting = false;
+    }
+    if (waiting) {
+      await populateControllers();
+    }
+
+    return waiting;
+  }
+
+  Future populateControllers() async {
+    preferences = await SharedPreferences.getInstance();
+    setState(() {
+      //   preferences.getString("uid");
+      firstname.text = preferences.getString("fname") ?? "";
+      lastname.text = preferences.getString("lname") ?? "";
+      work.text = preferences.getString("work") ?? "";
+      dob = DateTime.parse(
+          preferences.getString("dob") ?? DateTime.now().toString());
+      fathername.text = preferences.getString("fathername") ?? "";
+      mothername.text = preferences.getString("mothername") ?? "";
+      grandfathername.text = preferences.getString("grandfathername") ?? "";
+      grandmothername.text = preferences.getString("grandmothername") ?? "";
+      location.text = preferences.getString("location") ?? "";
+      sublocation.text = preferences.getString("sublocation") ?? "";
+      village.text = preferences.getString("village") ?? "";
+      selectedVouchertype = preferences.getString("vouchertype") ?? "";
+      voucheruniqueid.text = preferences.getString("voucherid") ?? "";
+      //   preferences.getString("DigitalIdentity??"""
+      // prefegetces.setStringList( "personpics", );
+      // );
+    });
   }
 
   Future getPhoneNumbers() async {
@@ -463,43 +505,69 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
                       //       );
                       //     },
                       //   );
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Center(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: Center(
-                                  child: Container(
-                                    height: 200,
-                                    width: 200,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white60),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: const [
-                                        CircularProgressIndicator(
-                                          color: Colors.lightBlue,
-                                        ),
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 20, bottom: 8.0),
-                                          child: Text(
-                                            "Please Wait ...",
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.bold),
+                      //   isloading = false;
+                      //   isloading = false;
+                      bool result =
+                          await InternetConnectionChecker().hasConnection;
+                      if (result == true) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Center(
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: Center(
+                                    child: Container(
+                                      height: 200,
+                                      width: 200,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.white60),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: const [
+                                          CircularProgressIndicator(
+                                            color: Colors.lightBlue,
                                           ),
-                                        )
-                                      ],
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                top: 20, bottom: 8.0),
+                                            child: Text(
+                                              "Please Wait ...",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          });
-                      await performOperations();
+                              );
+                            });
+                        await performOperations();
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "please check your internet connection");
+
+                        await FirebaseFunc().cachePersonDetail(
+                          firstname.text.toString(),
+                          lastname.value.text.trim(),
+                          work.value.text.trim(),
+                          dob,
+                          fathername.value.text.trim(),
+                          mothername.value.text.trim(),
+                          grandfathername.value.text.trim(),
+                          grandmothername.value.text.trim(),
+                          location.value.text.trim(),
+                          sublocation.value.text.trim(),
+                          village.value.text.trim(),
+                          _selectedVoucher,
+                          voucheruniqueid.value.text.trim(),
+                        );
+                      }
+                      //await checkinternetconnectivity(context);
 
                       ///await _displayTextInputDialog(context);
                       // setState(() {
@@ -586,9 +654,9 @@ class _DIRegisterState extends State<DIRegister> with TickerProviderStateMixin {
             voucheruniqueid.value.text.trim(),
             allpics)
         .then((value) {
-      Route route =
-          MaterialPageRoute(builder: ((context) => const ProfilePage()));
-      Navigator.pushReplacement(context, route);
+      Navigator.of(context).pop();
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: ((context) => const ProfilePage())));
     });
   }
 
