@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:jaziadigitalid/DigitalId/Functions/consts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:twilio_flutter/twilio_flutter.dart';
@@ -34,9 +35,9 @@ class DigitalId {
 
   static String currentuserPhotUrl = "";
 
-  static String twilioSID = "AC7048c718d058d37b94db87b2373701f6";
-  static String twilioPhoneNumber = "+16292342795";
-  static String twilioauthtoken = "a8ea642208350b8738e71f6dc0db4df8";
+  static String twilioSID = TWILIOSID;
+  static String twilioPhoneNumber = TWILIOPHONENUMBER;
+  static String twilioauthtoken = TWILIOAUTHTOKEN;
 }
 
 int randomNumber = 0;
@@ -53,6 +54,9 @@ Future SendTwilioMessage(String phone, String body) async {
   try {
     await twilioFlutter.sendSMS(toNumber: phone, messageBody: body);
   } catch (e) {
+    print(
+      e.toString(),
+    );
     Fluttertoast.showToast(msg: e.toString());
   }
 }
